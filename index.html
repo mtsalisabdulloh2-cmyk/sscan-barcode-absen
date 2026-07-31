@@ -831,7 +831,7 @@
         }
 
         /* ============================================================
-           POPUP
+           POPUP - AUTO CLOSE
            ============================================================ */
         .popup-overlay {
             display: none;
@@ -867,6 +867,40 @@
             text-align: center;
             box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        /* Timer Progress Bar */
+        .popup-timer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0ecf5;
+            border-radius: 0 0 32px 32px;
+            overflow: hidden;
+        }
+
+        .popup-timer-bar .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2b8c6b, #4ade80);
+            border-radius: 0 0 32px 32px;
+            width: 100%;
+            animation: timerShrink 3.5s linear forwards;
+        }
+
+        .popup-timer-bar .timer-fill.error {
+            background: linear-gradient(90deg, #c62828, #f87171);
+        }
+
+        .popup-timer-bar .timer-fill.warning {
+            background: linear-gradient(90deg, #e65100, #fbbf24);
+        }
+
+        @keyframes timerShrink {
+            from { width: 100%; }
+            to { width: 0%; }
         }
 
         @keyframes popIn {
@@ -885,6 +919,21 @@
             50% { transform: scale(1.3) rotate(5deg); }
             70% { transform: scale(0.9) rotate(-3deg); }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .popup-container .popup-icon .fa-check-circle {
+            color: #2b8c6b;
+            filter: drop-shadow(0 10px 30px rgba(43, 140, 107, 0.3));
+        }
+
+        .popup-container .popup-icon .fa-times-circle {
+            color: #c62828;
+            filter: drop-shadow(0 10px 30px rgba(198, 40, 40, 0.3));
+        }
+
+        .popup-container .popup-icon .fa-exclamation-triangle {
+            color: #e65100;
+            filter: drop-shadow(0 10px 30px rgba(230, 81, 0, 0.3));
         }
 
         .popup-container .popup-avatar {
@@ -983,6 +1032,11 @@
             font-size: 0.95rem;
             margin: 0.1rem 0;
             animation: textPop 0.5s ease 0.5s both;
+        }
+
+        .popup-container .popup-detail i {
+            margin-right: 0.3rem;
+            color: #2a7f9e;
         }
 
         .popup-container .popup-code {
@@ -1232,7 +1286,7 @@
                 <span class="realtime-badge"><span class="live-dot"></span> LIVE</span>
             </h1>
             <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
-                <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Realtime Firebase - Kamera Auto Start
+                <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Realtime Firebase - Auto Close Popup
             </div>
         </div>
         <div class="header-right">
@@ -1297,8 +1351,8 @@
             </div>
             <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
                 <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
-                    <span><i class="fas fa-bolt" style="color:#2b8c6b;"></i> <strong>Realtime</strong> - Semua perubahan langsung tersinkronisasi</span>
-                    <span><i class="fas fa-video" style="color:#2a7f9e;"></i> Kamera Auto Start di tab Scan</span>
+                    <span><i class="fas fa-bolt" style="color:#2b8c6b;"></i> <strong>Realtime</strong> - Popup otomatis tertutup</span>
+                    <span><i class="fas fa-clock"></i> Popup tertutup setelah 3.5 detik</span>
                 </div>
             </div>
         </div>
@@ -1462,7 +1516,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN BARCODE - KAMERA AUTO START
+         TAB: SCAN BARCODE - AUTO CLOSE POPUP
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
@@ -1473,6 +1527,9 @@
                 </span>
                 <span style="font-size:0.6rem; background:#e3f2fd; color:#0d47a1; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
                     <i class="fas fa-video"></i> Auto Start
+                </span>
+                <span style="font-size:0.6rem; background:#e8f5e9; color:#2e7d32; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
+                    <i class="fas fa-clock"></i> Auto Close 3.5s
                 </span>
             </div>
 
@@ -1550,10 +1607,15 @@
 </div>
 
 <!-- ============================================================
-     SUCCESS POPUP
+     POPUP - AUTO CLOSE
      ============================================================ -->
 <div class="popup-overlay" id="successPopup">
     <div class="popup-container">
+        <!-- Timer Progress Bar -->
+        <div class="popup-timer-bar">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+
         <div class="popup-icon" id="popupIcon">
             <i class="fas fa-check-circle"></i>
         </div>
@@ -1643,13 +1705,16 @@
     let isSaving = false;
     let pendingFoto = null;
     let scanHistory = [];
-    let isFirebaseReady = false;
     let isLocalUpdate = false;
 
     // Scanner state
     let html5Scanner = null;
     let isScanning = false;
     let scannerStarted = false;
+
+    // Popup auto close timer
+    let popupAutoCloseTimer = null;
+    let popupCloseTimeout = null;
 
     // ============================================================
     // DEFAULT DATA
@@ -1814,7 +1879,6 @@
         document.getElementById('firebaseStatus').innerHTML = '<span class="pulse-dot"></span> Terhubung (Realtime)';
         document.getElementById('firebaseStatus').className = 'firebase-status firebase-connected';
 
-        // Auto start scanner when tab scan is active
         setTimeout(() => {
             const scanTab = document.getElementById('tabScan');
             if (scanTab && scanTab.classList.contains('active')) {
@@ -1825,6 +1889,7 @@
         console.log('📱 Realtime Admin & Scanner siap digunakan!');
         console.log('📚 Total siswa: ' + students.length);
         console.log('🎥 Kamera auto start di tab Scan');
+        console.log('⏰ Popup auto close setelah 3.5 detik');
     }
 
     // ============================================================
@@ -2408,7 +2473,7 @@
     }
 
     // ============================================================
-    // SCANNER - AUTO START
+    // SCANNER
     // ============================================================
     function startScanner() {
         if (isScanning) {
@@ -2419,7 +2484,6 @@
         const statusText = document.getElementById('scannerStatus');
 
         try {
-            // Bersihkan container jika ada
             const container = document.getElementById('reader');
             if (container) {
                 container.innerHTML = '';
@@ -2463,9 +2527,7 @@
 
         if (navigator.vibrate) navigator.vibrate(200);
         processAttendance(decodedText);
-        
-        // Scanner tetap berjalan, tidak berhenti agar bisa scan lagi
-        // Tapi kita reset status agar siap scan lagi
+
         setTimeout(() => {
             if (isScanning) {
                 const statusText2 = document.getElementById('scannerStatus');
@@ -2474,9 +2536,7 @@
         }, 2000);
     }
 
-    function onScanError(error) {
-        // Silent ignore - this is called continuously
-    }
+    function onScanError(error) {}
 
     function stopScanner() {
         if (html5Scanner) {
@@ -2568,9 +2628,13 @@
     }
 
     // ============================================================
-    // SUCCESS POPUP
+    // SUCCESS POPUP - AUTO CLOSE
     // ============================================================
     function showSuccessPopup(student, type, errorMessage) {
+        // Clear existing timers
+        clearTimeout(popupCloseTimeout);
+        clearTimeout(popupAutoCloseTimer);
+
         const overlay = document.getElementById('successPopup');
         const icon = document.getElementById('popupIcon');
         const avatar = document.getElementById('popupAvatar');
@@ -2583,14 +2647,24 @@
         const kode = document.getElementById('popupKode');
         const time = document.getElementById('popupTime');
         const closeBtn = document.getElementById('popupCloseBtn');
+        const timerFill = document.getElementById('timerFill');
+
+        // Reset timer animation
+        timerFill.style.animation = 'none';
+        setTimeout(() => {
+            timerFill.style.animation = '';
+        }, 10);
 
         avatar.className = 'popup-avatar';
         icon.className = 'popup-icon';
         status.className = 'popup-status';
         closeBtn.className = 'popup-close-btn';
+        timerFill.className = 'timer-fill';
 
         const now = new Date();
         const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        let closeDelay = 3500; // 3.5 detik untuk auto close
 
         if (type === 'success') {
             icon.innerHTML = '<i class="fas fa-check-circle"></i>';
@@ -2598,8 +2672,9 @@
             status.textContent = '✅ HADIR';
             status.className = 'popup-status success';
             closeBtn.className = 'popup-close-btn';
+            timerFill.className = 'timer-fill';
 
-            if (student.foto && student.foto.startsWith('data:image')) {
+            if (student && student.foto && student.foto.startsWith('data:image')) {
                 avatarImg.src = student.foto;
                 avatarImg.style.display = 'block';
                 defaultIcon.style.display = 'none';
@@ -2609,10 +2684,10 @@
                 defaultIcon.className = 'fas fa-user-graduate default-avatar';
             }
 
-            name.textContent = student.namaLengkap;
-            kelas.textContent = `📚 Kelas: ${student.kelas || '-'}`;
-            nisn.textContent = `🆔 NISN: ${student.nisn || '-'}`;
-            kode.textContent = `📌 ${student.kodeUnik}`;
+            name.textContent = student ? student.namaLengkap : 'Nama Siswa';
+            kelas.textContent = `📚 Kelas: ${student ? student.kelas || '-' : '-'}`;
+            nisn.textContent = `🆔 NISN: ${student ? student.nisn || '-' : '-'}`;
+            kode.textContent = `📌 ${student ? student.kodeUnik : '-'}`;
             time.textContent = `⏰ Absen pada: ${waktu}`;
             closeBtn.innerHTML = '<i class="fas fa-check"></i> OK';
 
@@ -2622,8 +2697,9 @@
             status.textContent = '⚠️ SUDAH ABSEN';
             status.className = 'popup-status already';
             closeBtn.className = 'popup-close-btn btn-warning';
+            timerFill.className = 'timer-fill warning';
 
-            if (student.foto && student.foto.startsWith('data:image')) {
+            if (student && student.foto && student.foto.startsWith('data:image')) {
                 avatarImg.src = student.foto;
                 avatarImg.style.display = 'block';
                 defaultIcon.style.display = 'none';
@@ -2633,10 +2709,10 @@
                 defaultIcon.className = 'fas fa-user-graduate default-avatar';
             }
 
-            name.textContent = student.namaLengkap;
-            kelas.textContent = `📚 Kelas: ${student.kelas || '-'}`;
-            nisn.textContent = `🆔 NISN: ${student.nisn || '-'}`;
-            kode.textContent = `📌 ${student.kodeUnik}`;
+            name.textContent = student ? student.namaLengkap : 'Nama Siswa';
+            kelas.textContent = `📚 Kelas: ${student ? student.kelas || '-' : '-'}`;
+            nisn.textContent = `🆔 NISN: ${student ? student.nisn || '-' : '-'}`;
+            kode.textContent = `📌 ${student ? student.kodeUnik : '-'}`;
             time.textContent = `⏰ Sudah absen sebelumnya pada: ${waktu}`;
             closeBtn.innerHTML = '<i class="fas fa-check"></i> OK';
 
@@ -2646,6 +2722,7 @@
             status.textContent = '❌ GAGAL';
             status.className = 'popup-status error';
             closeBtn.className = 'popup-close-btn btn-error';
+            timerFill.className = 'timer-fill error';
 
             avatarImg.style.display = 'none';
             defaultIcon.style.display = 'block';
@@ -2659,29 +2736,35 @@
             kode.textContent = `📌 ${errorMessage || 'Kode tidak valid'}`;
             time.textContent = `⏰ Scan pada: ${waktu}`;
             closeBtn.innerHTML = '<i class="fas fa-times"></i> Tutup';
+            closeDelay = 4000; // Error popup lebih lama (4 detik)
         }
 
         overlay.classList.add('active');
 
-        if (type !== 'error') {
-            clearTimeout(window.popupAutoClose);
-            window.popupAutoClose = setTimeout(() => {
-                closeSuccessPopup();
-            }, 5000);
-        }
+        // Auto close setelah delay
+        popupCloseTimeout = setTimeout(() => {
+            closeSuccessPopup();
+        }, closeDelay);
     }
 
     function closeSuccessPopup() {
-        document.getElementById('successPopup').classList.remove('active');
-        clearTimeout(window.popupAutoClose);
+        const overlay = document.getElementById('successPopup');
+        overlay.classList.remove('active');
+        clearTimeout(popupCloseTimeout);
+        clearTimeout(popupAutoCloseTimer);
     }
 
+    // Close popup with click outside
     document.getElementById('successPopup').addEventListener('click', function(e) {
         if (e.target === this) closeSuccessPopup();
     });
 
+    // Close popup with ESC key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeSuccessPopup();
+        if (e.key === 'Escape') {
+            closeSuccessPopup();
+            closeModal();
+        }
     });
 
     // ============================================================
@@ -2750,20 +2833,15 @@
         const contentMap = { dashboard: 'tabDashboard', students: 'tabStudents', add: 'tabAdd', classes: 'tabClasses', scan: 'tabScan' };
         document.getElementById(contentMap[tab])?.classList.add('active');
 
-        // Auto start camera when switching to scan tab
         if (tab === 'scan') {
             setTimeout(() => {
                 renderScanHistory();
                 if (!isScanning && !scannerStarted) {
                     startScanner();
                 } else if (!isScanning && scannerStarted) {
-                    // Jika scanner mati tapi pernah di-start, restart
                     startScanner();
                 }
             }, 500);
-        } else {
-            // Jangan matikan kamera saat pindah tab, biarkan tetap berjalan
-            // Tapi jika pindah ke tab lain, kamera tetap menyala di background
         }
     }
 
@@ -2808,12 +2886,9 @@
         }
     });
 
-    // Handle visibility change - keep camera running
+    // Handle visibility change
     document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            // Jangan matikan kamera saat tab di-hidden, biarkan berjalan
-        } else {
-            // Jika kembali ke tab dan scanner mati, restart
+        if (!document.hidden) {
             const scanTab = document.getElementById('tabScan');
             if (scanTab && scanTab.classList.contains('active')) {
                 if (!isScanning && scannerStarted) {
