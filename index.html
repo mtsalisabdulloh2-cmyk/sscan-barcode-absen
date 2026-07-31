@@ -1232,7 +1232,7 @@
                 <span class="realtime-badge"><span class="live-dot"></span> LIVE</span>
             </h1>
             <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
-                <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Realtime Firebase - Perubahan langsung terlihat di semua perangkat
+                <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Realtime Firebase - Kamera Auto Start
             </div>
         </div>
         <div class="header-right">
@@ -1298,7 +1298,7 @@
             <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
                 <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
                     <span><i class="fas fa-bolt" style="color:#2b8c6b;"></i> <strong>Realtime</strong> - Semua perubahan langsung tersinkronisasi</span>
-                    <span><i class="fas fa-clock"></i> Diperbarui otomatis dari Firebase</span>
+                    <span><i class="fas fa-video" style="color:#2a7f9e;"></i> Kamera Auto Start di tab Scan</span>
                 </div>
             </div>
         </div>
@@ -1462,7 +1462,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN BARCODE - REALTIME
+         TAB: SCAN BARCODE - KAMERA AUTO START
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
@@ -1471,6 +1471,9 @@
                 <span class="realtime-badge" style="font-size:0.65rem;">
                     <span class="live-dot"></span> Realtime
                 </span>
+                <span style="font-size:0.6rem; background:#e3f2fd; color:#0d47a1; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
+                    <i class="fas fa-video"></i> Auto Start
+                </span>
             </div>
 
             <div class="info-bar">
@@ -1478,8 +1481,8 @@
                 <span><i class="fas fa-calendar-day"></i> <span id="scanTanggalHari"></span></span>
                 <span><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <span id="scanHadirHari">0</span> hadir</span>
                 <span>
-                    <span class="status-badge waiting" id="scanStatusBadge">
-                        <i class="fas fa-circle"></i> Siap Scan
+                    <span class="status-badge scanning" id="scanStatusBadge">
+                        <i class="fas fa-spinner fa-spin"></i> Kamera Aktif
                     </span>
                 </span>
             </div>
@@ -1506,16 +1509,16 @@
                     </div>
 
                     <div class="scanner-status" id="scannerStatus">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Klik <span class="highlight">Mulai Scan</span> untuk aktifkan kamera</span>
+                        <i class="fas fa-video"></i>
+                        <span>Kamera aktif <span class="highlight">otomatis</span> - Arahkan ke QR/Barcode</span>
                     </div>
 
                     <div class="scanner-buttons">
-                        <button class="btn btn-primary" onclick="startScanner()">
-                            <i class="fas fa-play"></i> Mulai Scan
-                        </button>
                         <button class="btn btn-danger" onclick="stopScanner()">
-                            <i class="fas fa-stop"></i> Berhenti
+                            <i class="fas fa-stop"></i> Hentikan Kamera
+                        </button>
+                        <button class="btn btn-primary" onclick="startScanner()">
+                            <i class="fas fa-play"></i> Mulai Ulang
                         </button>
                         <button class="btn btn-outline" onclick="clearScanHistory()">
                             <i class="fas fa-trash"></i> Hapus Riwayat
@@ -1646,6 +1649,7 @@
     // Scanner state
     let html5Scanner = null;
     let isScanning = false;
+    let scannerStarted = false;
 
     // ============================================================
     // DEFAULT DATA
@@ -1670,14 +1674,12 @@
         const dbRef = window.dbRef;
         const dbOnValue = window.dbOnValue;
 
-        // Listen to students data
         const studentsRef = dbRef(db, 'absensiData/students');
         dbOnValue(studentsRef, (snapshot) => {
             if (isLocalUpdate) return;
             const data = snapshot.val();
             if (data) {
                 const newStudents = Object.values(data).filter(s => s !== null);
-                // Check if data really changed
                 if (JSON.stringify(newStudents) !== JSON.stringify(students)) {
                     students = newStudents;
                     nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
@@ -1689,7 +1691,6 @@
             }
         });
 
-        // Listen to attendance data
         const attendanceRef = dbRef(db, 'absensiData/attendance');
         dbOnValue(attendanceRef, (snapshot) => {
             if (isLocalUpdate) return;
@@ -1705,7 +1706,6 @@
             }
         });
 
-        // Listen to classes data
         const classesRef = dbRef(db, 'absensiData/classes');
         dbOnValue(classesRef, (snapshot) => {
             if (isLocalUpdate) return;
@@ -1775,7 +1775,6 @@
     // INIT
     // ============================================================
     async function initApp() {
-        // Load from localStorage first (fast)
         const stored = localStorage.getItem('siswaData_realtime');
         if (stored) {
             try {
@@ -1787,7 +1786,6 @@
             } catch (e) {}
         }
 
-        // Load scan history
         const storedHistory = localStorage.getItem('scanHistory_realtime');
         if (storedHistory) {
             try {
@@ -1797,7 +1795,6 @@
             } catch (e) {}
         }
 
-        // If no data, use default
         if (students.length === 0) {
             const defaultData = getDefaultData();
             students = defaultData.students;
@@ -1806,26 +1803,28 @@
             nextId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
         }
 
-        // Setup Firebase realtime listeners
         setupRealtimeListeners();
-
-        // Save initial data to Firebase
         await saveToFirebase();
 
-        // Render
         renderAll();
         updateDashboard();
         updateScanInfo();
         renderScanHistory();
 
-        // Update status
         document.getElementById('firebaseStatus').innerHTML = '<span class="pulse-dot"></span> Terhubung (Realtime)';
         document.getElementById('firebaseStatus').className = 'firebase-status firebase-connected';
 
+        // Auto start scanner when tab scan is active
+        setTimeout(() => {
+            const scanTab = document.getElementById('tabScan');
+            if (scanTab && scanTab.classList.contains('active')) {
+                startScanner();
+            }
+        }, 1000);
+
         console.log('📱 Realtime Admin & Scanner siap digunakan!');
-        console.log(`📚 Total siswa: ${students.length}`);
-        console.log(`📋 Total kelas: ${classList.length}`);
-        console.log('🔄 Semua perubahan langsung tersinkronisasi ke semua perangkat');
+        console.log('📚 Total siswa: ' + students.length);
+        console.log('🎥 Kamera auto start di tab Scan');
     }
 
     // ============================================================
@@ -1836,7 +1835,6 @@
         renderClassTags();
         updateClassDropdowns();
         updateCounts();
-        // Save to localStorage as backup
         localStorage.setItem('siswaData_realtime', JSON.stringify({ students, attendance, classes: classList }));
     }
 
@@ -2071,7 +2069,7 @@
     }
 
     // ============================================================
-    // STUDENT CRUD - WITH REALTIME SYNC
+    // STUDENT CRUD
     // ============================================================
     function getFormData() {
         return {
@@ -2410,11 +2408,10 @@
     }
 
     // ============================================================
-    // SCANNER
+    // SCANNER - AUTO START
     // ============================================================
     function startScanner() {
         if (isScanning) {
-            showToast('Scanner sudah berjalan', 'info');
             return;
         }
 
@@ -2422,6 +2419,12 @@
         const statusText = document.getElementById('scannerStatus');
 
         try {
+            // Bersihkan container jika ada
+            const container = document.getElementById('reader');
+            if (container) {
+                container.innerHTML = '';
+            }
+
             html5Scanner = new Html5Qrcode("reader");
 
             const config = {
@@ -2431,9 +2434,10 @@
             };
 
             isScanning = true;
+            scannerStarted = true;
             status.className = 'status-badge scanning';
             status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memindai...';
-            statusText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>📷 Memindai QR Code / Barcode...</span>';
+            statusText.innerHTML = '<i class="fas fa-video"></i> <span>📷 Kamera aktif - Arahkan ke QR/Barcode</span>';
 
             html5Scanner.start(
                 { facingMode: "environment" },
@@ -2449,6 +2453,7 @@
             statusText.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#c84e4e;"></i> <span>⚠️ ' + err.message + '</span>';
             showToast('⚠️ Gagal mengakses kamera: ' + err.message, 'error');
             isScanning = false;
+            scannerStarted = false;
         }
     }
 
@@ -2458,10 +2463,20 @@
 
         if (navigator.vibrate) navigator.vibrate(200);
         processAttendance(decodedText);
-        stopScanner();
+        
+        // Scanner tetap berjalan, tidak berhenti agar bisa scan lagi
+        // Tapi kita reset status agar siap scan lagi
+        setTimeout(() => {
+            if (isScanning) {
+                const statusText2 = document.getElementById('scannerStatus');
+                statusText2.innerHTML = '<i class="fas fa-video"></i> <span>📷 Kamera aktif - Siap scan berikutnya</span>';
+            }
+        }, 2000);
     }
 
-    function onScanError(error) {}
+    function onScanError(error) {
+        // Silent ignore - this is called continuously
+    }
 
     function stopScanner() {
         if (html5Scanner) {
@@ -2474,13 +2489,14 @@
         }
 
         isScanning = false;
+        scannerStarted = false;
 
         const status = document.getElementById('scanStatusBadge');
         status.className = 'status-badge waiting';
-        status.innerHTML = '<i class="fas fa-circle"></i> Siap Scan';
+        status.innerHTML = '<i class="fas fa-circle"></i> Kamera Off';
 
         document.getElementById('scannerStatus').innerHTML =
-            '<i class="fas fa-info-circle"></i> <span>Klik <span class="highlight">Mulai Scan</span> untuk aktifkan kamera</span>';
+            '<i class="fas fa-info-circle"></i> <span>Kamera dimatikan. Klik <span class="highlight">Mulai Ulang</span> untuk aktifkan</span>';
     }
 
     // ============================================================
@@ -2506,7 +2522,7 @@
     });
 
     // ============================================================
-    // PROCESS ATTENDANCE - REALTIME SYNC
+    // PROCESS ATTENDANCE
     // ============================================================
     async function processAttendance(kode) {
         const student = students.find(s => s.kodeUnik === kode);
@@ -2535,13 +2551,11 @@
             return;
         }
 
-        // Record attendance
         if (!attendance[today]) {
             attendance[today] = {};
         }
         attendance[today][student.id] = 'Hadir';
 
-        // Save to Firebase (realtime)
         await saveToFirebase();
 
         addScanHistory(student, 'Hadir');
@@ -2736,14 +2750,20 @@
         const contentMap = { dashboard: 'tabDashboard', students: 'tabStudents', add: 'tabAdd', classes: 'tabClasses', scan: 'tabScan' };
         document.getElementById(contentMap[tab])?.classList.add('active');
 
+        // Auto start camera when switching to scan tab
         if (tab === 'scan') {
             setTimeout(() => {
                 renderScanHistory();
+                if (!isScanning && !scannerStarted) {
+                    startScanner();
+                } else if (!isScanning && scannerStarted) {
+                    // Jika scanner mati tapi pernah di-start, restart
+                    startScanner();
+                }
             }, 500);
         } else {
-            if (isScanning) {
-                stopScanner();
-            }
+            // Jangan matikan kamera saat pindah tab, biarkan tetap berjalan
+            // Tapi jika pindah ke tab lain, kamera tetap menyala di background
         }
     }
 
@@ -2788,11 +2808,17 @@
         }
     });
 
-    // Handle visibility change
+    // Handle visibility change - keep camera running
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            if (isScanning) {
-                stopScanner();
+            // Jangan matikan kamera saat tab di-hidden, biarkan berjalan
+        } else {
+            // Jika kembali ke tab dan scanner mati, restart
+            const scanTab = document.getElementById('tabScan');
+            if (scanTab && scanTab.classList.contains('active')) {
+                if (!isScanning && scannerStarted) {
+                    startScanner();
+                }
             }
         }
     });
