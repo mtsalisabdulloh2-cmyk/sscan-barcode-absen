@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin & Scan Barcode - Absensi Siswa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ============================================================
+           RESET & GLOBAL
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f7fc 0%, #dce8f0 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a7f9e;
+            border-radius: 10px;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 10px 30px rgba(0, 20, 30, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-card h1 {
+            font-size: 1.8rem;
+            color: #0a2a3e;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-card h1 i {
+            color: #2a7f9e;
+        }
+
+        .header-card .badge {
+            background: #d4e3ef;
+            color: #134a63;
+            border-radius: 40px;
+            padding: 0.2rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .firebase-status {
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .firebase-connected {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .firebase-disconnected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #1f5a77;
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 80, 107, 0.25);
+        }
+        .btn-primary:hover {
+            background: #134a63;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #2b8c6b;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1f7356;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #c84e4e;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b13b3b;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #d9a13b;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #c08a2c;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #b6cfdf;
+            color: #1b4c64;
+        }
+        .btn-outline:hover {
+            background: #e3eff8;
+        }
+
+        .btn-sm {
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+        }
+        .btn-xs {
+            padding: 0.15rem 0.6rem;
+            font-size: 0.7rem;
+        }
+
+        /* ============================================================
+           TABS
+           ============================================================ */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            padding: 0.4rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #3d5e72;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab-btn.active {
+            background: #1f5a77;
+            color: white;
+            box-shadow: 0 4px 15px rgba(31, 90, 119, 0.3);
+        }
+
+        .tab-btn .tab-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        .tab-btn.active .tab-badge {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 20, 30, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0a2a3e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: #2a7f9e;
+        }
+
+        /* ============================================================
+           FORM GRID
+           ============================================================ */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem 1.5rem;
+            background: #f8fcff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            border: 1px solid #e0ecf5;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f4a61;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required {
+            color: #c84e4e;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.6rem 1rem;
+            border: 2px solid #dce8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: white;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .form-group .input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .form-group .input-wrapper button {
+            white-space: nowrap;
+            padding: 0.6rem 1rem;
+            background: #e3eff8;
+            border: 2px solid #b6cfdf;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1b4c64;
+            transition: 0.2s;
+        }
+
+        .form-group .input-wrapper button:hover {
+            background: #c8dbe9;
+        }
+
+        .form-group .file-preview {
+            margin-top: 0.3rem;
+        }
+
+        .form-group .file-preview img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #b6cfdf;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        /* ============================================================
+           SCANNER
+           ============================================================ */
+        .scanner-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .scanner-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1/1;
+            max-width: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            border: 3px solid #2a7f9e;
+            box-shadow: 0 0 30px rgba(42, 127, 158, 0.3);
+        }
+
+        #scanner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #scanner video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scanner-frame {
+            width: 70%;
+            height: 70%;
+            border: 3px solid rgba(42, 127, 158, 0.6);
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .scanner-frame::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 3px;
+            background: #2a7f9e;
+            animation: scanLine 2s infinite linear;
+        }
+
+        @keyframes scanLine {
+            0% { top: -2px; }
+            50% { top: calc(100% + 2px); }
+            100% { top: -2px; }
+        }
+
+        .scanner-frame .corner {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-color: #2a7f9e;
+            border-style: solid;
+            border-width: 0;
+        }
+
+        .scanner-frame .corner.tl { top: -3px; left: -3px; border-top-width: 4px; border-left-width: 4px; border-radius: 4px 0 0 0; }
+        .scanner-frame .corner.tr { top: -3px; right: -3px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 4px 0 0; }
+        .scanner-frame .corner.bl { bottom: -3px; left: -3px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 4px; }
+        .scanner-frame .corner.br { bottom: -3px; right: -3px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 4px 0; }
+
+        .scanner-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .scanner-controls .manual-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .scanner-controls .manual-input input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: 2px solid #dce8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .scanner-controls .manual-input input:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+        }
+
+        .scanner-controls .manual-input button {
+            padding: 0.7rem 1.5rem;
+            background: #1f5a77;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .scanner-controls .manual-input button:hover {
+            background: #134a63;
+        }
+
+        .scanner-status {
+            padding: 0.8rem 1rem;
+            background: #e3eff8;
+            border-radius: 12px;
+            text-align: center;
+            color: #1f4a61;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid #b6cfdf;
+        }
+
+        .scanner-status .highlight {
+            color: #2a7f9e;
+            font-weight: 700;
+        }
+
+        .scanner-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .scanner-buttons .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           SCAN HISTORY (RIWAYAT SCAN)
+           ============================================================ */
+        .scan-history {
+            background: #f8fcff;
+            border-radius: 16px;
+            border: 1px solid #e0ecf5;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .scan-history .history-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.6rem 0.8rem;
+            border-bottom: 1px solid #eef4f8;
+            transition: 0.2s;
+        }
+
+        .scan-history .history-item:hover {
+            background: rgba(42, 127, 158, 0.05);
+            border-radius: 8px;
+        }
+
+        .scan-history .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .scan-history .history-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e3eff8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #1f5a77;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .scan-history .history-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-history .history-info {
+            flex: 1;
+        }
+
+        .scan-history .history-info .name {
+            font-weight: 600;
+            color: #0a2a3e;
+            font-size: 0.95rem;
+        }
+
+        .scan-history .history-info .detail {
+            font-size: 0.8rem;
+            color: #64879e;
+        }
+
+        .scan-history .history-info .detail i {
+            margin-right: 0.2rem;
+        }
+
+        .scan-history .history-time {
+            font-size: 0.75rem;
+            color: #64879e;
+            white-space: nowrap;
+        }
+
+        .scan-history .history-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .scan-history .history-status.hadir {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .scan-history .history-status.already {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .scan-history .history-status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .scan-history .empty-history {
+            text-align: center;
+            padding: 2rem;
+            color: #64879e;
+            font-style: italic;
+        }
+
+        .scan-history .history-count {
+            font-size: 0.8rem;
+            color: #64879e;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-bar {
+            background: #e3eff8;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: #1f4a61;
+        }
+
+        .info-bar .count {
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-badge.waiting {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-badge.scanning {
+            background: #e3f2fd;
+            color: #0d47a1;
+            animation: blink 0.8s infinite;
+        }
+
+        .status-badge.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrapper {
+            background: white;
+            border-radius: 16px;
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 1000px;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            font-weight: 600;
+            color: #1f4a61;
+            background: #f2f9ff;
+            border-bottom: 2px solid #d7e5f0;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #e8f0f6;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #f8fcff;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #0b2a3b;
+        }
+
+        .student-code {
+            background: #e6f0f7;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #035079;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .student-code-unique {
+            background: #1f5a77;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            display: inline-block;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .student-code-unique:hover {
+            opacity: 0.8;
+        }
+
+        .class-badge {
+            background: #e3f0fa;
+            color: #1f5a77;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .class-badge-select {
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            border: 2px solid #b6cfdf;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            min-width: 80px;
+        }
+
+        .class-badge-select:focus {
+            border-color: #2a7f9e;
+        }
+
+        .attendance-status {
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .attendance-present {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .attendance-absent {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .attendance-late {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .attendance-excused {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .photo-thumb {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #dce8f0;
+        }
+
+        .empty-message {
+            padding: 2rem;
+            text-align: center;
+            color: #64879e;
+        }
+
+        .selected-count {
+            background: #1f5a77;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .bulk-bar {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #f8fcff;
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
+            border: 1px solid #e0ecf5;
+            margin-bottom: 1rem;
+        }
+
+        /* ============================================================
+           CLASS TAGS
+           ============================================================ */
+        .class-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .class-tag {
+            background: #e3f0fa;
+            color: #1f5a77;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .class-tag .remove {
+            cursor: pointer;
+            color: #c84e4e;
+            font-weight: 700;
+        }
+
+        .class-tag .remove:hover {
+            color: #a33a3a;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            float: right;
+            background: #e8f0f6;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #c84e4e;
+            color: white;
+        }
+
+        .modal h2 {
+            color: #0a2a3e;
+            margin-bottom: 1rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.3rem 1.5rem;
+        }
+
+        .detail-item {
+            padding: 0.2rem 0;
+            border-bottom: 1px solid #eef4f8;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #1f4a61;
+            font-size: 0.7rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item span {
+            color: #0a2a3e;
+            font-size: 0.9rem;
+        }
+
+        .detail-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .photo-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #dce8f0;
+        }
+
+        .cred-box {
+            background: #f0f7fc;
+            border-radius: 12px;
+            padding: 0.8rem;
+            border: 1px solid #dce8f0;
+            margin-bottom: 1rem;
+        }
+
+        .cred-box .cred-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.2rem 0;
+            font-size: 0.85rem;
+        }
+
+        .cred-box .cred-item label {
+            font-weight: 600;
+            color: #1f4a61;
+        }
+
+        .cred-box .cred-item span {
+            font-family: monospace;
+            cursor: pointer;
+        }
+
+        /* ============================================================
+           POPUP / TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f5a77;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 3000;
+            animation: slideUp 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.error {
+            background: #c84e4e;
+        }
+
+        .toast.success {
+            background: #2b8c6b;
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            body { padding: 0.5rem; }
+            .header-card { padding: 1rem; flex-direction: column; align-items: stretch; }
+            .form-grid { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .card { padding: 1rem; }
+            .bulk-bar { flex-direction: column; align-items: stretch; }
+            .scanner-wrapper { grid-template-columns: 1fr; }
+            .scanner-container { max-width: 100%; }
+            .tabs { flex-direction: column; }
+            .tab-btn { justify-content: center; }
+            .scan-history { max-height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header-card">
+        <div>
+            <h1>
+                <i class="fas fa-user-graduate"></i> Admin & Scanner
+                <span class="badge" id="totalCount">0 siswa</span>
+            </h1>
+            <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
+                <i class="fas fa-database"></i> Data tersimpan di Firebase & LocalStorage
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="firebase-status firebase-connected" id="firebaseStatus">
+                <i class="fas fa-check-circle"></i> Terhubung
+            </span>
+            <button class="btn btn-outline btn-sm" onclick="syncData()">
+                <i class="fas fa-sync"></i> Sync
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('dashboard')">
+            <i class="fas fa-home"></i> Dashboard
+        </button>
+        <button class="tab-btn" onclick="switchTab('students')">
+            <i class="fas fa-list"></i> Data Siswa
+            <span class="tab-badge" id="studentBadge">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('add')">
+            <i class="fas fa-plus-circle"></i> Tambah Siswa
+        </button>
+        <button class="tab-btn" onclick="switchTab('classes')">
+            <i class="fas fa-users"></i> Kelas
+        </button>
+        <button class="tab-btn" onclick="switchTab('scan')">
+            <i class="fas fa-qrcode"></i> Scan Barcode
+            <span class="tab-badge" id="scanBadge">0</span>
+        </button>
+    </div>
+
+    <!-- ============================================================
+         TAB: DASHBOARD
+         ============================================================ -->
+    <div class="tab-content active" id="tabDashboard">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-chart-bar"></i> Dashboard</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
+                <div style="background:#f8fcff; border-radius:16px; padding:1.5rem; text-align:center; border:1px solid #e0ecf5;">
+                    <div style="font-size:2.5rem; font-weight:700; color:#2a7f9e;" id="dashTotal">0</div>
+                    <div style="color:#64879e; font-size:0.85rem;">Total Siswa</div>
+                </div>
+                <div style="background:#f8fcff; border-radius:16px; padding:1.5rem; text-align:center; border:1px solid #e0ecf5;">
+                    <div style="font-size:2.5rem; font-weight:700; color:#2b8c6b;" id="dashHadir">0</div>
+                    <div style="color:#64879e; font-size:0.85rem;">Hadir Hari Ini</div>
+                </div>
+                <div style="background:#f8fcff; border-radius:16px; padding:1.5rem; text-align:center; border:1px solid #e0ecf5;">
+                    <div style="font-size:2.5rem; font-weight:700; color:#d9a13b;" id="dashKelas">0</div>
+                    <div style="color:#64879e; font-size:0.85rem;">Total Kelas</div>
+                </div>
+                <div style="background:#f8fcff; border-radius:16px; padding:1.5rem; text-align:center; border:1px solid #e0ecf5;">
+                    <div style="font-size:2.5rem; font-weight:700; color:#6c3b8a;" id="dashScan">0</div>
+                    <div style="color:#64879e; font-size:0.85rem;">Total Scan Hari Ini</div>
+                </div>
+            </div>
+            <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
+                <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
+                    <span><i class="fas fa-database"></i> Data tersimpan di <strong>Firebase</strong> & <strong>LocalStorage</strong></span>
+                    <span><i class="fas fa-sync"></i> Sinkronisasi otomatis setiap 30 detik</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: DATA SISWA
+         ============================================================ -->
+    <div class="tab-content" id="tabStudents">
+        <!-- Bulk Action Bar -->
+        <div class="bulk-bar">
+            <label style="font-weight:600; font-size:0.85rem; color:#1f4a61;">
+                <i class="fas fa-edit"></i> Ubah Kelas:
+            </label>
+            <select id="bulkKelas" onchange="bulkClassChange()" style="padding:0.4rem 1rem; border-radius:12px; border:2px solid #dce8f0; background:white;">
+                <option value="">Pilih Kelas...</option>
+            </select>
+            <span class="selected-count" id="selectedCount">0 dipilih</span>
+            <button class="btn btn-sm btn-outline" onclick="selectAllStudents()">
+                <i class="fas fa-check-double"></i> Pilih Semua
+            </button>
+            <button class="btn btn-sm btn-outline" onclick="clearSelection()">
+                <i class="fas fa-times"></i> Hapus Pilihan
+            </button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:30px;"><input type="checkbox" id="selectAll" onchange="toggleAll()"></th>
+                        <th>#</th>
+                        <th>Foto</th>
+                        <th>Kode Unik</th>
+                        <th>Nama</th>
+                        <th>NISN</th>
+                        <th>Kelas</th>
+                        <th>Username</th>
+                        <th>Absen Hari Ini</th>
+                        <th style="text-align:right;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Rendered by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: TAMBAH SISWA
+         ============================================================ -->
+    <div class="tab-content" id="tabAdd">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-id-card"></i> <span id="formTitle">Tambah Siswa Baru</span></div>
+            <form id="studentForm" onsubmit="return false;">
+                <div class="form-grid">
+                    <!-- Kode Unik -->
+                    <div class="form-group">
+                        <label>Kode Unik <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="kodeUnik" placeholder="S-2024-001" required>
+                            <button type="button" onclick="generateKode()"><i class="fas fa-sync-alt"></i> Gen</button>
+                        </div>
+                    </div>
+                    <!-- Nama -->
+                    <div class="form-group">
+                        <label>Nama Lengkap <span class="required">*</span></label>
+                        <input type="text" id="namaLengkap" placeholder="Nama lengkap" required>
+                    </div>
+                    <!-- NISN -->
+                    <div class="form-group">
+                        <label>NISN <span class="required">*</span></label>
+                        <input type="text" id="nisn" placeholder="NISN" required>
+                    </div>
+                    <!-- Kelas -->
+                    <div class="form-group">
+                        <label>Kelas <span class="required">*</span></label>
+                        <input type="text" id="kelasInput" placeholder="Contoh: VII A" list="kelasList" required>
+                        <datalist id="kelasList"></datalist>
+                    </div>
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label>Username <span class="required">*</span></label>
+                        <input type="text" id="username" placeholder="Username login" required>
+                    </div>
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label>Password <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" placeholder="Min 6 karakter" required>
+                            <button type="button" onclick="togglePassword()"><i class="fas fa-eye" id="pwdIcon"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail tambahan -->
+                <div style="margin:0.5rem 0 0.8rem 0; font-weight:600; color:#1f4a61; font-size:0.85rem;">
+                    <i class="fas fa-chevron-down"></i> Data Lengkap (opsional)
+                </div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Tempat Lahir</label><input type="text" id="tempatLahir"></div>
+                    <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="tanggalLahir"></div>
+                    <div class="form-group">
+                        <label>Jenis Kelamin</label>
+                        <select id="jenisKelamin">
+                            <option value="">Pilih</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Anak Ke-</label><input type="text" id="anakKe" placeholder="2 dari 3"></div>
+                    <div class="form-group"><label>Dusun</label><input type="text" id="dusun"></div>
+                    <div class="form-group"><label>Desa/Kelurahan</label><input type="text" id="desa"></div>
+                    <div class="form-group"><label>Kecamatan</label><input type="text" id="kecamatan"></div>
+                    <div class="form-group"><label>Kabupaten/Kota</label><input type="text" id="kabupaten"></div>
+                    <div class="form-group"><label>Provinsi</label><input type="text" id="provinsi"></div>
+                    <div class="form-group"><label>RT/RW</label><input type="text" id="rtRw" placeholder="001/002"></div>
+                    <div class="form-group"><label>No. Telepon</label><input type="text" id="noTelp"></div>
+                    <div class="form-group"><label>Kode Pos</label><input type="text" id="kodePos"></div>
+                    <div class="form-group"><label>Nama Ayah</label><input type="text" id="namaAyah"></div>
+                    <div class="form-group"><label>Nama Ibu</label><input type="text" id="namaIbu"></div>
+                    <div class="form-group"><label>Pekerjaan Ayah</label><input type="text" id="pekerjaanAyah"></div>
+                    <div class="form-group"><label>Pekerjaan Ibu</label><input type="text" id="pekerjaanIbu"></div>
+                    <div class="form-group"><label>Alamat Orang Tua</label><textarea id="alamatOrtu" rows="2"></textarea></div>
+                    <div class="form-group"><label>No. KK</label><input type="text" id="noKK"></div>
+                    <div class="form-group"><label>NIK Siswa</label><input type="text" id="nikSiswa"></div>
+                    <div class="form-group"><label>NIK Ayah</label><input type="text" id="nikAyah"></div>
+                    <div class="form-group"><label>NIK Ibu</label><input type="text" id="nikIbu"></div>
+                    <div class="form-group"><label>Nama Wali</label><input type="text" id="namaWali"></div>
+                    <div class="form-group"><label>Alamat Wali</label><textarea id="alamatWali" rows="2"></textarea></div>
+                    <div class="form-group"><label>Asal Sekolah</label><input type="text" id="asalSekolah"></div>
+                    <div class="form-group"><label>Alamat Sekolah</label><textarea id="alamatSekolah" rows="2"></textarea></div>
+                    <div class="form-group"><label>NSM/NPSN</label><input type="text" id="nsmNpsn"></div>
+                    <div class="form-group"><label>Catatan</label><textarea id="catatan" rows="2"></textarea></div>
+                    <div class="form-group">
+                        <label>Upload Foto</label>
+                        <input type="file" id="uploadFoto" accept="image/*">
+                        <div class="file-preview" id="fotoPreview"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="saveStudent()">
+                        <i class="fas fa-save"></i> <span id="saveBtnText">Tambah Siswa</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="clearForm()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: KELAS
+         ============================================================ -->
+    <div class="tab-content" id="tabClasses">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-users"></i> Manajemen Kelas</div>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem;">
+                <input type="text" id="newClassInput" placeholder="Nama kelas baru..." style="padding:0.6rem 1rem; border:2px solid #dce8f0; border-radius:12px; flex:1; min-width:200px;">
+                <button class="btn btn-primary" onclick="addClass()"><i class="fas fa-plus"></i> Tambah Kelas</button>
+                <button class="btn btn-danger btn-sm" onclick="clearAllClasses()"><i class="fas fa-trash"></i> Hapus Semua</button>
+            </div>
+            <div class="class-tags" id="classTags"></div>
+            <div style="margin-top:1rem; color:#64879e; font-size:0.85rem;">
+                <i class="fas fa-info-circle"></i> Kelas yang dihapus akan mengosongkan kelas siswa yang bersangkutan.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: SCAN BARCODE
+         ============================================================ -->
+    <div class="tab-content" id="tabScan">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-qrcode"></i> Scan Barcode Absensi</div>
+
+            <!-- Info Bar -->
+            <div class="info-bar">
+                <span><i class="fas fa-users"></i> <span id="scanTotalSiswa">0</span> siswa</span>
+                <span><i class="fas fa-calendar-day"></i> <span id="scanTanggalHari"></span></span>
+                <span><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <span id="scanHadirHari">0</span> hadir</span>
+                <span>
+                    <span class="status-badge waiting" id="scanStatusBadge" style="display:inline-block; padding:0.2rem 0.8rem; border-radius:12px; font-size:0.7rem; font-weight:600;">
+                        <i class="fas fa-circle"></i> Siap Scan
+                    </span>
+                </span>
+            </div>
+
+            <div class="scanner-wrapper">
+                <!-- Scanner -->
+                <div class="scanner-container">
+                    <div id="scanner"></div>
+                    <div class="scanner-overlay">
+                        <div class="scanner-frame">
+                            <div class="corner tl"></div>
+                            <div class="corner tr"></div>
+                            <div class="corner bl"></div>
+                            <div class="corner br"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="scanner-controls">
+                    <div class="manual-input">
+                        <input type="text" id="manualKode" placeholder="Atau ketik kode unik..." autocomplete="off">
+                        <button onclick="manualCheck()">
+                            <i class="fas fa-search"></i> Cek
+                        </button>
+                    </div>
+
+                    <div class="scanner-status" id="scannerStatus">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Klik <span class="highlight">Mulai Scan</span> untuk aktifkan kamera</span>
+                    </div>
+
+                    <div class="scanner-buttons">
+                        <button class="btn btn-primary" onclick="startScanner()">
+                            <i class="fas fa-play"></i> Mulai Scan
+                        </button>
+                        <button class="btn btn-danger" onclick="stopScanner()">
+                            <i class="fas fa-stop"></i> Berhenti
+                        </button>
+                        <button class="btn btn-outline" onclick="clearScanHistory()">
+                            <i class="fas fa-trash"></i> Hapus Riwayat
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================================
+                 SCAN HISTORY - RIWAYAT SCAN BARCODE
+                 ============================================================ -->
+            <div style="margin-top:1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+                    <div style="font-weight:600; color:#0a2a3e; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fas fa-history" style="color:#2a7f9e;"></i> Riwayat Scan
+                        <span class="badge" id="historyCount" style="background:#d4e3ef; color:#134a63; border-radius:40px; padding:0.1rem 0.8rem; font-size:0.7rem;">0</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#64879e;">
+                        <i class="fas fa-info-circle"></i> Menampilkan scan hari ini
+                    </div>
+                </div>
+
+                <div class="scan-history" id="scanHistory">
+                    <div class="empty-history">
+                        <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                        Belum ada riwayat scan hari ini
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <h2 id="modalTitle">Detail Siswa</h2>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<!-- Popup Scanner Result -->
+<div class="popup-overlay" id="popupSuccess" style="display:none;">
+    <div class="modal" style="max-width:420px; text-align:center;">
+        <div class="check-icon" style="font-size:4rem; margin-bottom:0.5rem;" id="popupIcon">
+            <i class="fas fa-check-circle" style="color:#2b8c6b;"></i>
+        </div>
+        <img class="photo-large" id="popupPhoto" src="" alt="Foto" style="width:100px; height:100px; border-radius:50%; object-fit:cover; margin:0 auto; display:block;">
+        <div class="popup-status" id="popupStatus" style="display:inline-block; padding:0.4rem 1.5rem; border-radius:20px; font-weight:700; font-size:1.1rem; margin-top:0.5rem; background:#e8f5e9; color:#2e7d32;">✅ HADIR</div>
+        <div class="popup-name" id="popupName" style="font-size:1.4rem; font-weight:700; color:#0a2a3e; margin-top:0.3rem;">Nama Siswa</div>
+        <div class="popup-detail" id="popupKelas" style="color:#64879e; font-size:0.9rem;">Kelas: VII A</div>
+        <div class="popup-detail" id="popupNisn" style="color:#64879e; font-size:0.9rem;">NISN: 1234567890</div>
+        <div class="popup-detail" id="popupKode" style="color:#64879e; font-size:0.9rem;">Kode: S-2024-001</div>
+        <div class="popup-detail" id="popupTime" style="color:#64879e; font-size:0.9rem;">Absen: 00:00:00</div>
+        <button class="btn btn-primary" onclick="closePopup()" style="margin-top:1rem;">
+            <i class="fas fa-check"></i> OK
+        </button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <i class="fas fa-info-circle"></i>
+    <span id="toastMsg">Pesan</span>
+</div>
+
+<!-- Firebase SDK -->
+<script type="importmap">
+{
+    "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js"
+    }
+}
+</script>
+
+<script type="module">
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, set, get, child, onValue } from "firebase/database";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCFkIrTY4WLburyAdgJJ1c24bNx9Ldt1x8",
+        authDomain: "scan-absen-734a0.firebaseapp.com",
+        projectId: "scan-absen-734a0",
+        storageBucket: "scan-absen-734a0.firebasestorage.app",
+        messagingSenderId: "839071202835",
+        appId: "1:839071202835:web:719c0986c1050463d109e6",
+        measurementId: "G-PBQ5G0HYXS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    window.db = database;
+    window.dbRef = ref;
+    window.dbGet = get;
+    window.dbSet = set;
+    window.dbChild = child;
+    window.dbOnValue = onValue;
+
+    document.getElementById('firebaseStatus').innerHTML = '<i class="fas fa-check-circle"></i> Terhubung';
+    document.getElementById('firebaseStatus').className = 'firebase-status firebase-connected';
+</script>
+
+<script>
+    // ============================================================
+    // STATE
+    // ============================================================
+    let students = [];
+    let attendance = {};
+    let classList = [];
+    let nextId = 1;
+    let editingId = null;
+    let selectedIds = new Set();
+    let isSaving = false;
+    let pendingFoto = null;
+
+    // Scanner state
+    let scannerRunning = false;
+    let lastScanned = null;
+    let scanTimeout = null;
+
+    // Scan History - Riwayat scan hari ini
+    let scanHistory = [];
+
+    // ============================================================
+    // DEFAULT DATA
+    // ============================================================
+    function getDefaultData() {
+        return {
+            students: [
+                { id: 1, kodeUnik: 'S-2024-001', namaLengkap: 'Aisha Rahmadani', nisn: '1234567890', username: 'aisha.rahmadani', password: 'aisha123', kelas: 'VII A', tempatLahir: 'Bandung', tanggalLahir: '2010-05-15', jenisKelamin: 'Perempuan', anakKe: '2 dari 3', dusun: 'Cibeureum', desa: 'Sukajadi', kecamatan: 'Sukasari', kabupaten: 'Bandung', provinsi: 'Jawa Barat', rtRw: '003/005', noTelp: '081234567890', kodePos: '40162', namaAyah: 'Hendra', namaIbu: 'Rina', pekerjaanAyah: 'Guru', pekerjaanIbu: 'IRT', alamatOrtu: 'Jl. Cibeureum 123', noKK: '3212345678901234', nikSiswa: '3212345678901234', nikAyah: '3212345678901235', nikIbu: '3212345678901236', namaWali: '', alamatWali: '', asalSekolah: 'SD Negeri 1', alamatSekolah: 'Jl. Merdeka 45', nsmNpsn: '20212345', catatan: '', foto: '' },
+                { id: 2, kodeUnik: 'S-2024-002', namaLengkap: 'Bima Putra Pratama', nisn: '1234567891', username: 'bima.pratama', password: 'bima123', kelas: 'VIII B', tempatLahir: 'Jakarta', tanggalLahir: '2009-11-20', jenisKelamin: 'Laki-laki', anakKe: '1 dari 2', dusun: 'Pondok Bambu', desa: 'Duren Sawit', kecamatan: 'Duren Sawit', kabupaten: 'Jakarta Timur', provinsi: 'DKI Jakarta', rtRw: '002/004', noTelp: '081234567891', kodePos: '13430', namaAyah: 'Bambang', namaIbu: 'Dewi', pekerjaanAyah: 'Swasta', pekerjaanIbu: 'Guru', alamatOrtu: 'Jl. Pondok Bambu 56', noKK: '3112345678901234', nikSiswa: '3112345678901234', nikAyah: '3112345678901235', nikIbu: '3112345678901236', namaWali: '', alamatWali: '', asalSekolah: 'SD Negeri 5', alamatSekolah: 'Jl. Raya Bogor 78', nsmNpsn: '20212346', catatan: '', foto: '' },
+                { id: 3, kodeUnik: 'S-2024-003', namaLengkap: 'Cahya Kirana Dewi', nisn: '1234567892', username: 'cahya.dewi', password: 'cahya123', kelas: 'IX C', tempatLahir: 'Surabaya', tanggalLahir: '2010-08-10', jenisKelamin: 'Perempuan', anakKe: '3 dari 3', dusun: 'Karang Pilang', desa: 'Karang Pilang', kecamatan: 'Karang Pilang', kabupaten: 'Surabaya', provinsi: 'Jawa Timur', rtRw: '005/008', noTelp: '081234567892', kodePos: '60222', namaAyah: 'Agus', namaIbu: 'Siti', pekerjaanAyah: 'Wiraswasta', pekerjaanIbu: 'IRT', alamatOrtu: 'Jl. Karang Pilang 78', noKK: '3512345678901234', nikSiswa: '3512345678901234', nikAyah: '3512345678901235', nikIbu: '3512345678901236', namaWali: '', alamatWali: '', asalSekolah: 'SD Negeri 3', alamatSekolah: 'Jl. Darmo 12', nsmNpsn: '20212347', catatan: '', foto: '' }
+            ],
+            attendance: {},
+            classes: ['VII A', 'VII B', 'VII C', 'VIII A', 'VIII B', 'VIII C', 'IX A', 'IX B', 'IX C']
+        };
+    }
+
+    // ============================================================
+    // FIREBASE OPERATIONS
+    // ============================================================
+    async function loadFromFirebase() {
+        try {
+            const db = window.db;
+            const dbRef = window.dbRef;
+            const dbGet = window.dbGet;
+            const dbChild = window.dbChild;
+
+            const snapshot = await dbGet(dbChild(dbRef(db), 'absensiData'));
+
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (data.students) {
+                    students = Object.values(data.students).filter(s => s !== null);
+                    nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                }
+                if (data.attendance) {
+                    attendance = data.attendance;
+                }
+                if (data.classes) {
+                    classList = data.classes;
+                }
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Load error:', error);
+            return false;
+        }
+    }
+
+    async function saveToFirebase() {
+        if (isSaving) return;
+        isSaving = true;
+
+        try {
+            const db = window.db;
+            const dbRef = window.dbRef;
+            const dbSet = window.dbSet;
+
+            const data = {
+                students: students,
+                attendance: attendance,
+                classes: classList,
+                updatedAt: new Date().toISOString()
+            };
+
+            await dbSet(dbRef(db, 'absensiData'), data);
+            return true;
+        } catch (error) {
+            console.error('Save error:', error);
+            return false;
+        } finally {
+            isSaving = false;
+        }
+    }
+
+    async function syncData() {
+        showToast('Menyinkronkan data...');
+        const loaded = await loadFromFirebase();
+        if (loaded) {
+            renderAll();
+            updateDashboard();
+            updateScanInfo();
+            showToast('✅ Data dimuat dari Firebase');
+        } else {
+            await saveToFirebase();
+            showToast('✅ Data disimpan ke Firebase');
+        }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    async function initApp() {
+        // Load from localStorage first
+        const stored = localStorage.getItem('siswaData');
+        if (stored) {
+            try {
+                const data = JSON.parse(stored);
+                students = data.students || [];
+                attendance = data.attendance || {};
+                classList = data.classes || getDefaultData().classes;
+                nextId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
+            } catch (e) {}
+        }
+
+        // Load scan history
+        const storedHistory = localStorage.getItem('scanHistory');
+        if (storedHistory) {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const allHistory = JSON.parse(storedHistory);
+                scanHistory = allHistory[today] || [];
+            } catch (e) {}
+        }
+
+        // If no data, use default
+        if (students.length === 0) {
+            const defaultData = getDefaultData();
+            students = defaultData.students;
+            attendance = defaultData.attendance;
+            classList = defaultData.classes;
+            nextId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
+        }
+
+        // Load from Firebase
+        await loadFromFirebase();
+
+        renderAll();
+        updateDashboard();
+        updateScanInfo();
+        renderScanHistory();
+
+        // Auto sync every 30 seconds
+        setInterval(async () => {
+            await loadFromFirebase();
+            renderAll();
+            updateDashboard();
+            updateScanInfo();
+        }, 30000);
+
+        console.log('📱 Admin & Scanner siap digunakan!');
+        console.log(`📚 Total siswa: ${students.length}`);
+        console.log(`📋 Total kelas: ${classList.length}`);
+    }
+
+    // ============================================================
+    // RENDER FUNCTIONS
+    // ============================================================
+    function renderAll() {
+        renderTable();
+        renderClassTags();
+        updateClassDropdowns();
+        updateCounts();
+        localStorage.setItem('siswaData', JSON.stringify({ students, attendance, classes: classList }));
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        if (!tbody) return;
+
+        if (students.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" class="empty-message">
+                <i class="fas fa-inbox" style="margin-right:10px;"></i>Belum ada data siswa
+            </td></tr>`;
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+
+        let html = '';
+        students.forEach((s, idx) => {
+            const checked = selectedIds.has(s.id) ? 'checked' : '';
+            const foto = s.foto ? `<img src="${s.foto}" class="photo-thumb">` :
+                `<i class="fas fa-user-circle" style="font-size:30px;color:#b6cfdf;"></i>`;
+
+            const status = attendance[today]?.[s.id] || null;
+            const statusClass = status === 'Hadir' ? 'attendance-present' :
+                status === 'Tidak Hadir' ? 'attendance-absent' :
+                status === 'Terlambat' ? 'attendance-late' :
+                status === 'Izin' ? 'attendance-excused' : '';
+            const statusText = status || 'Belum';
+
+            html += `
+                <tr>
+                    <td><input type="checkbox" class="student-check" value="${s.id}" ${checked} onchange="toggleStudent(${s.id})"></td>
+                    <td>${idx + 1}</td>
+                    <td>${foto}</td>
+                    <td><span class="student-code-unique" onclick="copyText('${s.kodeUnik}')">${s.kodeUnik}</span></td>
+                    <td class="student-name">${s.namaLengkap}</td>
+                    <td><span class="student-code">${s.nisn}</span></td>
+                    <td>
+                        <select class="class-badge-select" onchange="updateClass(${s.id}, this.value)">
+                            <option value="">-</option>
+                            ${classList.map(c => `<option value="${c}" ${s.kelas === c ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><span class="student-code">${s.username || '-'}</span></td>
+                    <td><span class="attendance-status ${statusClass}">${statusText}</span></td>
+                    <td style="text-align:right;">
+                        <div class="action-cell" style="justify-content:flex-end;">
+                            <button class="btn btn-primary btn-xs" onclick="detailStudent(${s.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-warning btn-xs" onclick="editStudent(${s.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger btn-xs" onclick="deleteStudent(${s.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+        updateSelectedCount();
+    }
+
+    function renderClassTags() {
+        const container = document.getElementById('classTags');
+        if (!container) return;
+        if (classList.length === 0) {
+            container.innerHTML = '<span style="color:#64879e;">Belum ada kelas</span>';
+            return;
+        }
+        container.innerHTML = classList.map(c => `
+            <span class="class-tag">
+                ${c}
+                <span class="remove" onclick="removeClass('${c}')"><i class="fas fa-times"></i></span>
+            </span>
+        `).join('');
+    }
+
+    function updateClassDropdowns() {
+        const datalist = document.getElementById('kelasList');
+        if (datalist) {
+            datalist.innerHTML = classList.map(c => `<option value="${c}">`).join('');
+        }
+
+        const bulk = document.getElementById('bulkKelas');
+        if (bulk) {
+            const current = bulk.value;
+            bulk.innerHTML = '<option value="">Pilih Kelas...</option>' +
+                classList.map(c => `<option value="${c}">${c}</option>`).join('');
+            bulk.value = current;
+        }
+    }
+
+    function updateCounts() {
+        document.getElementById('totalCount').textContent = `${students.length} siswa`;
+        document.getElementById('studentBadge').textContent = students.length;
+    }
+
+    function updateSelectedCount() {
+        document.getElementById('selectedCount').textContent = `${selectedIds.size} dipilih`;
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) {
+            selectAll.checked = students.length > 0 && selectedIds.size === students.length;
+        }
+    }
+
+    function updateDashboard() {
+        document.getElementById('dashTotal').textContent = students.length;
+        const today = new Date().toISOString().split('T')[0];
+        const hadir = attendance[today] ? Object.keys(attendance[today]).length : 0;
+        document.getElementById('dashHadir').textContent = hadir;
+        document.getElementById('dashKelas').textContent = classList.length;
+        document.getElementById('dashScan').textContent = scanHistory.length;
+    }
+
+    function updateScanInfo() {
+        document.getElementById('scanTotalSiswa').textContent = students.length;
+        const today = new Date();
+        document.getElementById('scanTanggalHari').textContent =
+            today.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+        const todayStr = today.toISOString().split('T')[0];
+        const hadir = attendance[todayStr] ? Object.keys(attendance[todayStr]).length : 0;
+        document.getElementById('scanHadirHari').textContent = hadir;
+        document.getElementById('scanBadge').textContent = scanHistory.length;
+        document.getElementById('historyCount').textContent = scanHistory.length;
+    }
+
+    // ============================================================
+    // SCAN HISTORY - RIWAYAT SCAN
+    // ============================================================
+    function renderScanHistory() {
+        const container = document.getElementById('scanHistory');
+        if (!container) return;
+
+        if (scanHistory.length === 0) {
+            container.innerHTML = `
+                <div class="empty-history">
+                    <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                    Belum ada riwayat scan hari ini
+                </div>
+            `;
+            return;
+        }
+
+        // Sort by time descending (terbaru di atas)
+        const sorted = [...scanHistory].reverse();
+
+        let html = `<div class="history-count"><i class="fas fa-list"></i> ${scanHistory.length} scan hari ini</div>`;
+        sorted.forEach(item => {
+            const statusClass = item.status === 'Hadir' ? 'hadir' :
+                item.status === 'Sudah Absen' ? 'already' : 'error';
+
+            const avatarHtml = item.foto ?
+                `<img src="${item.foto}" alt="foto">` :
+                `<i class="fas fa-user" style="font-size:1rem; color:#1f5a77;"></i>`;
+
+            html += `
+                <div class="history-item">
+                    <div class="history-avatar">
+                        ${avatarHtml}
+                    </div>
+                    <div class="history-info">
+                        <div class="name">${item.nama}</div>
+                        <div class="detail">
+                            <i class="fas fa-id-card"></i> ${item.kode} 
+                            <i class="fas fa-users" style="margin-left:0.5rem;"></i> ${item.kelas}
+                        </div>
+                    </div>
+                    <span class="history-status ${statusClass}">${item.status}</span>
+                    <div class="history-time">
+                        <i class="fas fa-clock"></i> ${item.waktu}
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        updateScanInfo();
+        updateDashboard();
+    }
+
+    function addScanHistory(student, status) {
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const entry = {
+            nama: student.namaLengkap,
+            kode: student.kodeUnik,
+            kelas: student.kelas || '-',
+            foto: student.foto || '',
+            status: status,
+            waktu: waktu,
+            timestamp: now.toISOString()
+        };
+
+        scanHistory.push(entry);
+
+        // Simpan ke localStorage
+        const storedHistory = localStorage.getItem('scanHistory');
+        let allHistory = {};
+        if (storedHistory) {
+            try {
+                allHistory = JSON.parse(storedHistory);
+            } catch (e) {}
+        }
+        if (!allHistory[today]) {
+            allHistory[today] = [];
+        }
+        allHistory[today] = scanHistory;
+        localStorage.setItem('scanHistory', JSON.stringify(allHistory));
+
+        renderScanHistory();
+    }
+
+    function clearScanHistory() {
+        if (scanHistory.length === 0) {
+            showToast('⚠️ Tidak ada riwayat scan', 'error');
+            return;
+        }
+        if (!confirm('Hapus semua riwayat scan hari ini?')) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        scanHistory = [];
+
+        const storedHistory = localStorage.getItem('scanHistory');
+        if (storedHistory) {
+            try {
+                const allHistory = JSON.parse(storedHistory);
+                delete allHistory[today];
+                localStorage.setItem('scanHistory', JSON.stringify(allHistory));
+            } catch (e) {}
+        }
+
+        renderScanHistory();
+        updateDashboard();
+        showToast('🗑️ Riwayat scan dihapus', 'info');
+    }
+
+    // ============================================================
+    // STUDENT CRUD
+    // ============================================================
+    function getFormData() {
+        return {
+            kodeUnik: document.getElementById('kodeUnik').value.trim(),
+            namaLengkap: document.getElementById('namaLengkap').value.trim(),
+            nisn: document.getElementById('nisn').value.trim(),
+            username: document.getElementById('username').value.trim(),
+            password: document.getElementById('password').value.trim(),
+            kelas: document.getElementById('kelasInput').value.trim(),
+            tempatLahir: document.getElementById('tempatLahir').value.trim(),
+            tanggalLahir: document.getElementById('tanggalLahir').value,
+            jenisKelamin: document.getElementById('jenisKelamin').value,
+            anakKe: document.getElementById('anakKe').value.trim(),
+            dusun: document.getElementById('dusun').value.trim(),
+            desa: document.getElementById('desa').value.trim(),
+            kecamatan: document.getElementById('kecamatan').value.trim(),
+            kabupaten: document.getElementById('kabupaten').value.trim(),
+            provinsi: document.getElementById('provinsi').value.trim(),
+            rtRw: document.getElementById('rtRw').value.trim(),
+            noTelp: document.getElementById('noTelp').value.trim(),
+            kodePos: document.getElementById('kodePos').value.trim(),
+            namaAyah: document.getElementById('namaAyah').value.trim(),
+            namaIbu: document.getElementById('namaIbu').value.trim(),
+            pekerjaanAyah: document.getElementById('pekerjaanAyah').value.trim(),
+            pekerjaanIbu: document.getElementById('pekerjaanIbu').value.trim(),
+            alamatOrtu: document.getElementById('alamatOrtu').value.trim(),
+            noKK: document.getElementById('noKK').value.trim(),
+            nikSiswa: document.getElementById('nikSiswa').value.trim(),
+            nikAyah: document.getElementById('nikAyah').value.trim(),
+            nikIbu: document.getElementById('nikIbu').value.trim(),
+            namaWali: document.getElementById('namaWali').value.trim(),
+            alamatWali: document.getElementById('alamatWali').value.trim(),
+            asalSekolah: document.getElementById('asalSekolah').value.trim(),
+            alamatSekolah: document.getElementById('alamatSekolah').value.trim(),
+            nsmNpsn: document.getElementById('nsmNpsn').value.trim(),
+            catatan: document.getElementById('catatan').value.trim(),
+            foto: pendingFoto || ''
+        };
+    }
+
+    function setFormData(data) {
+        document.getElementById('kodeUnik').value = data.kodeUnik || '';
+        document.getElementById('namaLengkap').value = data.namaLengkap || '';
+        document.getElementById('nisn').value = data.nisn || '';
+        document.getElementById('username').value = data.username || '';
+        document.getElementById('password').value = data.password || '';
+        document.getElementById('kelasInput').value = data.kelas || '';
+        document.getElementById('tempatLahir').value = data.tempatLahir || '';
+        document.getElementById('tanggalLahir').value = data.tanggalLahir || '';
+        document.getElementById('jenisKelamin').value = data.jenisKelamin || '';
+        document.getElementById('anakKe').value = data.anakKe || '';
+        document.getElementById('dusun').value = data.dusun || '';
+        document.getElementById('desa').value = data.desa || '';
+        document.getElementById('kecamatan').value = data.kecamatan || '';
+        document.getElementById('kabupaten').value = data.kabupaten || '';
+        document.getElementById('provinsi').value = data.provinsi || '';
+        document.getElementById('rtRw').value = data.rtRw || '';
+        document.getElementById('noTelp').value = data.noTelp || '';
+        document.getElementById('kodePos').value = data.kodePos || '';
+        document.getElementById('namaAyah').value = data.namaAyah || '';
+        document.getElementById('namaIbu').value = data.namaIbu || '';
+        document.getElementById('pekerjaanAyah').value = data.pekerjaanAyah || '';
+        document.getElementById('pekerjaanIbu').value = data.pekerjaanIbu || '';
+        document.getElementById('alamatOrtu').value = data.alamatOrtu || '';
+        document.getElementById('noKK').value = data.noKK || '';
+        document.getElementById('nikSiswa').value = data.nikSiswa || '';
+        document.getElementById('nikAyah').value = data.nikAyah || '';
+        document.getElementById('nikIbu').value = data.nikIbu || '';
+        document.getElementById('namaWali').value = data.namaWali || '';
+        document.getElementById('alamatWali').value = data.alamatWali || '';
+        document.getElementById('asalSekolah').value = data.asalSekolah || '';
+        document.getElementById('alamatSekolah').value = data.alamatSekolah || '';
+        document.getElementById('nsmNpsn').value = data.nsmNpsn || '';
+        document.getElementById('catatan').value = data.catatan || '';
+
+        if (data.foto) {
+            document.getElementById('fotoPreview').innerHTML = `<img src="${data.foto}"><span>Foto tersimpan</span>`;
+            pendingFoto = data.foto;
+        }
+    }
+
+    function clearForm() {
+        document.getElementById('studentForm').reset();
+        document.getElementById('fotoPreview').innerHTML = '';
+        pendingFoto = null;
+        editingId = null;
+        document.getElementById('formTitle').textContent = 'Tambah Siswa Baru';
+        document.getElementById('saveBtnText').textContent = 'Tambah Siswa';
+        generateKode();
+        document.getElementById('password').type = 'password';
+        document.getElementById('pwdIcon').className = 'fas fa-eye';
+    }
+
+    function saveStudent() {
+        const data = getFormData();
+
+        // Validasi
+        if (!data.kodeUnik) { showToast('⚠️ Kode unik wajib diisi!', 'error'); return; }
+        if (!data.namaLengkap) { showToast('⚠️ Nama lengkap wajib diisi!', 'error'); return; }
+        if (!data.nisn) { showToast('⚠️ NISN wajib diisi!', 'error'); return; }
+        if (!data.username) { showToast('⚠️ Username wajib diisi!', 'error'); return; }
+        if (!data.password || data.password.length < 6) { showToast('⚠️ Password minimal 6 karakter!', 'error'); return; }
+        if (!data.kelas) { showToast('⚠️ Kelas wajib diisi!', 'error'); return; }
+
+        // Cek duplikat
+        const dupKode = students.some(s => s.kodeUnik === data.kodeUnik && s.id !== editingId);
+        if (dupKode) { showToast(`⚠️ Kode "${data.kodeUnik}" sudah terdaftar!`, 'error'); return; }
+
+        const dupNisn = students.some(s => s.nisn === data.nisn && s.id !== editingId);
+        if (dupNisn) { showToast(`⚠️ NISN "${data.nisn}" sudah terdaftar!`, 'error'); return; }
+
+        const dupUser = students.some(s => s.username === data.username && s.id !== editingId);
+        if (dupUser) { showToast(`⚠️ Username "${data.username}" sudah terdaftar!`, 'error'); return; }
+
+        // Tambah kelas ke daftar jika belum ada
+        if (data.kelas && !classList.includes(data.kelas)) {
+            classList.push(data.kelas);
+            classList.sort();
+        }
+
+        if (editingId) {
+            const idx = students.findIndex(s => s.id === editingId);
+            if (idx !== -1) {
+                students[idx] = { ...students[idx], ...data };
+            }
+            showToast('✅ Data siswa diperbarui!', 'success');
+        } else {
+            data.id = nextId++;
+            students.push(data);
+            showToast('✅ Siswa berhasil ditambahkan!', 'success');
+        }
+
+        editingId = null;
+        clearForm();
+        renderAll();
+        updateDashboard();
+        updateScanInfo();
+        saveToFirebase();
+        switchTab('students');
+    }
+
+    function editStudent(id) {
+        const s = students.find(st => st.id === id);
+        if (!s) return;
+        editingId = id;
+        setFormData(s);
+        document.getElementById('formTitle').textContent = 'Edit Data Siswa';
+        document.getElementById('saveBtnText').textContent = 'Update Data';
+        switchTab('add');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteStudent(id) {
+        const s = students.find(st => st.id === id);
+        if (!s) return;
+        if (!confirm(`Hapus "${s.namaLengkap}"?`)) return;
+        students = students.filter(st => st.id !== id);
+        selectedIds.delete(id);
+        if (editingId === id) {
+            clearForm();
+            editingId = null;
+        }
+        renderAll();
+        updateDashboard();
+        updateScanInfo();
+        saveToFirebase();
+        showToast(`🗑️ Siswa "${s.namaLengkap}" dihapus`, 'info');
+    }
+
+    function detailStudent(id) {
+        const s = students.find(st => st.id === id);
+        if (!s) return;
+
+        const modal = document.getElementById('detailModal');
+        const content = document.getElementById('modalContent');
+
+        const foto = s.foto ? `<img src="${s.foto}" class="photo-large">` :
+            `<i class="fas fa-user-circle" style="font-size:80px;color:#b6cfdf;"></i>`;
+
+        content.innerHTML = `
+            <div style="text-align:center; margin-bottom:1rem;">
+                ${foto}
+                <h3>${s.namaLengkap}</h3>
+                <div style="margin:0.5rem 0;">
+                    <span class="student-code-unique" onclick="copyText('${s.kodeUnik}')" style="font-size:1rem; padding:0.4rem 1.5rem;">
+                        ${s.kodeUnik} <i class="fas fa-copy" style="font-size:0.7rem;"></i>
+                    </span>
+                </div>
+                <span class="student-code">NISN: ${s.nisn}</span>
+                <span class="class-badge" style="margin-left:0.5rem;">${s.kelas || 'Tanpa Kelas'}</span>
+            </div>
+
+            <div class="cred-box">
+                <div style="font-weight:600;color:#1f4a61;margin-bottom:0.3rem;"><i class="fas fa-key"></i> Login</div>
+                <div class="cred-item"><label>Username:</label><span onclick="copyText('${s.username}')">${s.username} <i class="fas fa-copy" style="font-size:0.6rem;"></i></span></div>
+                <div class="cred-item"><label>Password:</label><span onclick="copyText('${s.password}')">${s.password} <i class="fas fa-copy" style="font-size:0.6rem;"></i></span></div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-item"><label>Tempat Lahir</label><span>${s.tempatLahir || '-'}</span></div>
+                <div class="detail-item"><label>Tanggal Lahir</label><span>${s.tanggalLahir || '-'}</span></div>
+                <div class="detail-item"><label>Jenis Kelamin</label><span>${s.jenisKelamin || '-'}</span></div>
+                <div class="detail-item"><label>Anak Ke-</label><span>${s.anakKe || '-'}</span></div>
+                <div class="detail-item full"><label>Alamat</label><span>${s.dusun || ''} ${s.desa || ''}, ${s.kecamatan || ''}, ${s.kabupaten || ''}, ${s.provinsi || ''} ${s.rtRw ? 'RT/RW '+s.rtRw : ''}</span></div>
+                <div class="detail-item"><label>Telepon</label><span>${s.noTelp || '-'}</span></div>
+                <div class="detail-item"><label>Kode Pos</label><span>${s.kodePos || '-'}</span></div>
+
+                <div class="detail-item full" style="border-bottom:2px solid #dce8f0;padding-bottom:0.5rem;margin-top:0.5rem;"><strong>Orang Tua</strong></div>
+                <div class="detail-item"><label>Ayah</label><span>${s.namaAyah || '-'}</span></div>
+                <div class="detail-item"><label>Ibu</label><span>${s.namaIbu || '-'}</span></div>
+                <div class="detail-item"><label>Pekerjaan Ayah</label><span>${s.pekerjaanAyah || '-'}</span></div>
+                <div class="detail-item"><label>Pekerjaan Ibu</label><span>${s.pekerjaanIbu || '-'}</span></div>
+                <div class="detail-item full"><label>Alamat Orang Tua</label><span>${s.alamatOrtu || '-'}</span></div>
+                <div class="detail-item"><label>No. KK</label><span>${s.noKK || '-'}</span></div>
+                <div class="detail-item"><label>NIK Siswa</label><span>${s.nikSiswa || '-'}</span></div>
+                <div class="detail-item"><label>NIK Ayah</label><span>${s.nikAyah || '-'}</span></div>
+                <div class="detail-item"><label>NIK Ibu</label><span>${s.nikIbu || '-'}</span></div>
+                ${s.namaWali ? `<div class="detail-item"><label>Wali</label><span>${s.namaWali}</span></div>` : ''}
+                ${s.alamatWali ? `<div class="detail-item full"><label>Alamat Wali</label><span>${s.alamatWali}</span></div>` : ''}
+
+                <div class="detail-item full" style="border-bottom:2px solid #dce8f0;padding-bottom:0.5rem;margin-top:0.5rem;"><strong>Pendidikan</strong></div>
+                <div class="detail-item"><label>Asal Sekolah</label><span>${s.asalSekolah || '-'}</span></div>
+                <div class="detail-item"><label>Alamat Sekolah</label><span>${s.alamatSekolah || '-'}</span></div>
+                <div class="detail-item"><label>NSM/NPSN</label><span>${s.nsmNpsn || '-'}</span></div>
+                ${s.catatan ? `<div class="detail-item full"><label>Catatan</label><span>${s.catatan}</span></div>` : ''}
+            </div>
+        `;
+
+        document.getElementById('modalTitle').textContent = `Detail: ${s.namaLengkap}`;
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('detailModal').classList.remove('active');
+    }
+
+    // ============================================================
+    // CLASS MANAGEMENT
+    // ============================================================
+    function addClass() {
+        const input = document.getElementById('newClassInput');
+        const name = input.value.trim();
+        if (!name) { showToast('⚠️ Masukkan nama kelas!', 'error'); return; }
+        if (classList.includes(name)) { showToast(`⚠️ "${name}" sudah ada!`, 'error'); return; }
+        classList.push(name);
+        classList.sort();
+        input.value = '';
+        renderAll();
+        updateDashboard();
+        saveToFirebase();
+        showToast(`✅ Kelas "${name}" ditambahkan`, 'success');
+    }
+
+    function removeClass(name) {
+        const count = students.filter(s => s.kelas === name).length;
+        if (count > 0 && !confirm(`Ada ${count} siswa di kelas "${name}". Lanjutkan?`)) return;
+        students.forEach(s => { if (s.kelas === name) s.kelas = ''; });
+        classList = classList.filter(c => c !== name);
+        renderAll();
+        updateDashboard();
+        saveToFirebase();
+        showToast(`🗑️ Kelas "${name}" dihapus`, 'info');
+    }
+
+    function clearAllClasses() {
+        if (classList.length === 0) { showToast('⚠️ Tidak ada kelas', 'error'); return; }
+        if (!confirm('Hapus SEMUA kelas?')) return;
+        students.forEach(s => s.kelas = '');
+        classList = [];
+        renderAll();
+        updateDashboard();
+        saveToFirebase();
+        showToast('🗑️ Semua kelas dihapus', 'info');
+    }
+
+    // ============================================================
+    // BULK OPERATIONS
+    // ============================================================
+    function toggleAll() {
+        const checked = document.getElementById('selectAll').checked;
+        students.forEach(s => {
+            if (checked) selectedIds.add(s.id);
+            else selectedIds.delete(s.id);
+        });
+        renderTable();
+    }
+
+    function toggleStudent(id) {
+        if (selectedIds.has(id)) selectedIds.delete(id);
+        else selectedIds.add(id);
+        renderTable();
+    }
+
+    function selectAllStudents() {
+        students.forEach(s => selectedIds.add(s.id));
+        renderTable();
+    }
+
+    function clearSelection() {
+        selectedIds.clear();
+        renderTable();
+    }
+
+    function bulkClassChange() {
+        const newClass = document.getElementById('bulkKelas').value;
+        if (!newClass) { showToast('⚠️ Pilih kelas terlebih dahulu!', 'error'); return; }
+        if (selectedIds.size === 0) { showToast('⚠️ Pilih siswa terlebih dahulu!', 'error'); return; }
+        if (!confirm(`Ubah ${selectedIds.size} siswa ke "${newClass}"?`)) return;
+
+        selectedIds.forEach(id => {
+            const s = students.find(st => st.id === id);
+            if (s) s.kelas = newClass;
+        });
+
+        if (!classList.includes(newClass)) {
+            classList.push(newClass);
+            classList.sort();
+        }
+
+        renderAll();
+        updateDashboard();
+        saveToFirebase();
+        clearSelection();
+        showToast(`✅ ${selectedIds.size} siswa diubah ke ${newClass}`, 'success');
+    }
+
+    function updateClass(id, newClass) {
+        const s = students.find(st => st.id === id);
+        if (!s) return;
+        s.kelas = newClass;
+        if (newClass && !classList.includes(newClass)) {
+            classList.push(newClass);
+            classList.sort();
+            renderClassTags();
+            updateClassDropdowns();
+        }
+        renderTable();
+        saveToFirebase();
+    }
+
+    // ============================================================
+    // SCANNER FUNCTIONS
+    // ============================================================
+    function startScanner() {
+        if (scannerRunning) {
+            showToast('Scanner sudah berjalan', 'info');
+            return;
+        }
+
+        const status = document.getElementById('scanStatusBadge');
+        status.className = 'status-badge scanning';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengakses kamera...';
+
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#scanner'),
+                constraints: {
+                    facingMode: "environment",
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            },
+            decoder: {
+                readers: [
+                    "code_128_reader", "ean_reader", "ean_8_reader",
+                    "code_39_reader", "code_93_reader", "codabar_reader",
+                    "upc_reader", "upc_e_reader", "i2of5_reader",
+                    "2of5_reader", "code_39_vin_reader"
+                ],
+                multiple: false
+            },
+            locate: true,
+            locator: { patchSize: 'medium', halfSample: true }
+        }, function(err) {
+            if (err) {
+                console.error(err);
+                status.className = 'status-badge error';
+                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal akses kamera';
+                showToast('❌ Gagal mengakses kamera!', 'error');
+                return;
+            }
+
+            scannerRunning = true;
+            status.className = 'status-badge scanning';
+            status.innerHTML = '<i class="fas fa-circle"></i> Memindai...';
+            document.getElementById('scannerStatus').innerHTML =
+                `<i class="fas fa-spinner fa-spin"></i> <span>📷 Memindai... Arahkan ke barcode</span>`;
+            showToast('📷 Scanner aktif. Arahkan ke barcode.', 'success');
+            Quagga.start();
+        });
+
+        Quagga.onDetected(function(result) {
+            const code = result.codeResult.code;
+            if (code && code !== lastScanned) {
+                lastScanned = code;
+                clearTimeout(scanTimeout);
+                scanTimeout = setTimeout(() => { lastScanned = null; }, 3000);
+
+                // Proses absensi
+                processAttendance(code);
+            }
+        });
+    }
+
+    function stopScanner() {
+        if (scannerRunning) {
+            Quagga.stop();
+            scannerRunning = false;
+            const status = document.getElementById('scanStatusBadge');
+            status.className = 'status-badge waiting';
+            status.innerHTML = '<i class="fas fa-circle"></i> Siap Scan';
+            document.getElementById('scannerStatus').innerHTML =
+                `<i class="fas fa-info-circle"></i> <span>Klik <span class="highlight">Mulai Scan</span> untuk aktifkan kamera</span>`;
+            showToast('⏹️ Scanner dihentikan', 'info');
+        }
+    }
+
+    function manualCheck() {
+        const input = document.getElementById('manualKode');
+        const kode = input.value.trim();
+        if (!kode) {
+            showToast('⚠️ Masukkan kode unik!', 'error');
+            input.focus();
+            return;
+        }
+        processAttendance(kode);
+        input.value = '';
+    }
+
+    document.getElementById('manualKode').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            manualCheck();
+        }
+    });
+
+    // ============================================================
+    // PROCESS ATTENDANCE
+    // ============================================================
+    async function processAttendance(kode) {
+        const student = students.find(s => s.kodeUnik === kode);
+
+        if (!student) {
+            // Tambahkan ke riwayat sebagai error
+            addScanHistory({
+                namaLengkap: '❌ Tidak Ditemukan',
+                kodeUnik: kode,
+                kelas: '-',
+                foto: ''
+            }, 'Tidak Ditemukan');
+            showPopupError(`❌ Siswa dengan kode "${kode}" tidak ditemukan!`);
+            showToast('❌ Siswa tidak ditemukan!', 'error');
+            if (navigator.vibrate) navigator.vibrate(200);
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        const alreadyAbsen = attendance[today] && attendance[today][student.id];
+
+        if (alreadyAbsen) {
+            addScanHistory(student, 'Sudah Absen');
+            showPopup(student, true);
+            showToast(`⚠️ ${student.namaLengkap} sudah absen hari ini!`, 'info');
+            if (navigator.vibrate) navigator.vibrate(100);
+            return;
+        }
+
+        // Record attendance
+        if (!attendance[today]) {
+            attendance[today] = {};
+        }
+        attendance[today][student.id] = 'Hadir';
+
+        // Save to localStorage
+        localStorage.setItem('siswaData', JSON.stringify({ students, attendance, classes: classList }));
+
+        // Save to Firebase
+        await saveToFirebase();
+
+        // Tambahkan ke riwayat scan
+        addScanHistory(student, 'Hadir');
+
+        showPopup(student, false);
+        showToast(`✅ ${student.namaLengkap} berhasil absen!`, 'success');
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        updateScanInfo();
+        updateDashboard();
+        renderTable();
+    }
+
+    // ============================================================
+    // POPUPS
+    // ============================================================
+    function showPopup(student, alreadyAbsen) {
+        const overlay = document.getElementById('popupSuccess');
+        overlay.style.display = 'flex';
+
+        const photo = document.getElementById('popupPhoto');
+        const icon = document.getElementById('popupIcon').querySelector('i');
+        const status = document.getElementById('popupStatus');
+
+        if (student.foto && student.foto.startsWith('data:image')) {
+            photo.src = student.foto;
+            photo.style.display = 'block';
+        } else {
+            photo.style.display = 'none';
+        }
+
+        document.getElementById('popupName').textContent = student.namaLengkap || 'Nama tidak tersedia';
+        document.getElementById('popupKelas').textContent = `Kelas: ${student.kelas || '-'}`;
+        document.getElementById('popupNisn').textContent = `NISN: ${student.nisn || '-'}`;
+        document.getElementById('popupKode').textContent = `Kode: ${student.kodeUnik || '-'}`;
+
+        if (alreadyAbsen) {
+            status.textContent = '⚠️ SUDAH ABSEN';
+            status.className = 'popup-status already';
+            status.style.background = '#fff3e0';
+            status.style.color = '#e65100';
+            icon.className = 'fas fa-exclamation-triangle';
+            icon.style.color = '#e65100';
+        } else {
+            status.textContent = '✅ HADIR';
+            status.className = 'popup-status hadir';
+            status.style.background = '#e8f5e9';
+            status.style.color = '#2e7d32';
+            icon.className = 'fas fa-check-circle';
+            icon.style.color = '#2b8c6b';
+        }
+
+        const now = new Date();
+        document.getElementById('popupTime').textContent = `Absen: ${now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' })}`;
+
+        clearTimeout(window.popupTimeout);
+        window.popupTimeout = setTimeout(closePopup, 5000);
+    }
+
+    function showPopupError(message) {
+        const overlay = document.getElementById('popupSuccess');
+        overlay.style.display = 'flex';
+
+        document.getElementById('popupPhoto').style.display = 'none';
+        document.getElementById('popupName').textContent = '❌ Error';
+        document.getElementById('popupKelas').textContent = '';
+        document.getElementById('popupNisn').textContent = '';
+        document.getElementById('popupKode').textContent = message;
+        document.getElementById('popupTime').textContent = '';
+
+        const icon = document.getElementById('popupIcon').querySelector('i');
+        icon.className = 'fas fa-times-circle';
+        icon.style.color = '#c62828';
+
+        const status = document.getElementById('popupStatus');
+        status.textContent = '❌ GAGAL';
+        status.className = 'popup-status error';
+        status.style.background = '#ffebee';
+        status.style.color = '#c62828';
+
+        clearTimeout(window.popupTimeout);
+        window.popupTimeout = setTimeout(closePopup, 4000);
+    }
+
+    function closePopup() {
+        document.getElementById('popupSuccess').style.display = 'none';
+        clearTimeout(window.popupTimeout);
+        lastScanned = null;
+    }
+
+    document.getElementById('popupSuccess').addEventListener('click', function(e) {
+        if (e.target === this) closePopup();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closePopup();
+    });
+
+    // ============================================================
+    // UTILITY FUNCTIONS
+    // ============================================================
+    function generateKode() {
+        const year = new Date().getFullYear();
+        const existing = students.map(s => s.kodeUnik);
+        let maxNum = 0;
+        existing.forEach(code => {
+            const match = code?.match(/S-\d{4}-(\d{3})/);
+            if (match) maxNum = Math.max(maxNum, parseInt(match[1]));
+        });
+        const next = String(maxNum + 1).padStart(3, '0');
+        document.getElementById('kodeUnik').value = `S-${year}-${next}`;
+    }
+
+    function togglePassword() {
+        const pwd = document.getElementById('password');
+        const icon = document.getElementById('pwdIcon');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            pwd.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast(`✅ "${text}" disalin!`, 'success');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast(`✅ "${text}" disalin!`, 'success');
+        });
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = message;
+        toast.className = 'toast show';
+        if (type === 'error') toast.classList.add('error');
+        else if (type === 'success') toast.classList.add('success');
+
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => {
+            toast.classList.remove('show');
+            toast.className = 'toast';
+        }, 3000);
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        const btnMap = { dashboard: 0, students: 1, add: 2, classes: 3, scan: 4 };
+        const idx = btnMap[tab] || 0;
+        document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
+
+        const contentMap = { dashboard: 'tabDashboard', students: 'tabStudents', add: 'tabAdd', classes: 'tabClasses', scan: 'tabScan' };
+        document.getElementById(contentMap[tab])?.classList.add('active');
+
+        if (tab === 'scan') {
+            setTimeout(startScanner, 500);
+            renderScanHistory();
+        } else {
+            if (scannerRunning) {
+                stopScanner();
+            }
+        }
+    }
+
+    // Auto-generate username from nama
+    document.getElementById('namaLengkap').addEventListener('input', function() {
+        const username = document.getElementById('username');
+        if (!username.value || username.dataset.auto === 'true') {
+            username.value = this.value.toLowerCase().replace(/\s+/g, '.');
+            username.dataset.auto = 'true';
+        }
+    });
+    document.getElementById('username').addEventListener('input', function() {
+        this.dataset.auto = 'false';
+    });
+
+    // Foto preview
+    document.getElementById('uploadFoto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('fotoPreview');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                preview.innerHTML = `<img src="${reader.result}"><span>${file.name}</span>`;
+                pendingFoto = reader.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '';
+            pendingFoto = null;
+        }
+    });
+
+    // Modal close on overlay click
+    document.getElementById('detailModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Cleanup scanner on page unload
+    window.addEventListener('beforeunload', function() {
+        if (scannerRunning) {
+            Quagga.stop();
+            scannerRunning = false;
+        }
+    });
+
+    // Handle visibility change
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            if (scannerRunning) {
+                Quagga.stop();
+                scannerRunning = false;
+            }
+        } else {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.id === 'tabScan' && !scannerRunning) {
+                setTimeout(startScanner, 500);
+            }
+        }
+    });
+
+    // ============================================================
+    // EXPOSE & INIT
+    // ============================================================
+    window.switchTab = switchTab;
+    window.syncData = syncData;
+    window.generateKode = generateKode;
+    window.togglePassword = togglePassword;
+    window.copyText = copyText;
+    window.showToast = showToast;
+    window.saveStudent = saveStudent;
+    window.editStudent = editStudent;
+    window.deleteStudent = deleteStudent;
+    window.detailStudent = detailStudent;
+    window.closeModal = closeModal;
+    window.clearForm = clearForm;
+    window.addClass = addClass;
+    window.removeClass = removeClass;
+    window.clearAllClasses = clearAllClasses;
+    window.toggleAll = toggleAll;
+    window.toggleStudent = toggleStudent;
+    window.selectAllStudents = selectAllStudents;
+    window.clearSelection = clearSelection;
+    window.bulkClassChange = bulkClassChange;
+    window.updateClass = updateClass;
+    window.startScanner = startScanner;
+    window.stopScanner = stopScanner;
+    window.manualCheck = manualCheck;
+    window.processAttendance = processAttendance;
+    window.closePopup = closePopup;
+    window.clearScanHistory = clearScanHistory;
+    window.renderScanHistory = renderScanHistory;
+    window.addScanHistory = addScanHistory;
+
+    initApp();
+</script>
+</body>
+</html>
