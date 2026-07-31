@@ -7,9 +7,6 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ============================================================
-           RESET & GLOBAL
-           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -26,19 +23,6 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2a7f9e;
-            border-radius: 10px;
         }
 
         .header-card {
@@ -211,10 +195,6 @@
             font-size: 0.7rem;
         }
 
-        .tab-btn.active .tab-badge {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -253,103 +233,8 @@
             color: #2a7f9e;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem 1.5rem;
-            background: #f8fcff;
-            padding: 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 1rem;
-            border: 1px solid #e0ecf5;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #1f4a61;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group label .required {
-            color: #c84e4e;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 0.6rem 1rem;
-            border: 2px solid #dce8f0;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: 0.2s;
-            background: white;
-            outline: none;
-            width: 100%;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #2a7f9e;
-            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 50px;
-        }
-
-        .form-group .input-wrapper {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .form-group .input-wrapper button {
-            white-space: nowrap;
-            padding: 0.6rem 1rem;
-            background: #e3eff8;
-            border: 2px solid #b6cfdf;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #1b4c64;
-            transition: 0.2s;
-        }
-
-        .form-group .input-wrapper button:hover {
-            background: #c8dbe9;
-        }
-
-        .form-group .file-preview {
-            margin-top: 0.3rem;
-        }
-
-        .form-group .file-preview img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #b6cfdf;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        }
-
         /* ============================================================
-           SCANNER - HTML5-QRCODE
+           SCANNER - PERBAIKAN
            ============================================================ */
         .scanner-wrapper {
             display: grid;
@@ -369,16 +254,19 @@
             box-shadow: 0 0 30px rgba(42, 127, 158, 0.3);
         }
 
-        #scanner-container {
+        #reader {
             width: 100%;
             height: 100%;
-            position: relative;
         }
 
-        #scanner-container video {
+        #reader video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        #reader img {
+            display: none;
         }
 
         .scanner-overlay {
@@ -485,6 +373,54 @@
             justify-content: center;
         }
 
+        .info-bar {
+            background: #e3eff8;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: #1f4a61;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-badge.waiting {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-badge.scanning {
+            background: #e3f2fd;
+            color: #0d47a1;
+            animation: blink 0.8s infinite;
+        }
+
+        .status-badge.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         /* ============================================================
            SCAN HISTORY
            ============================================================ */
@@ -551,10 +487,6 @@
             color: #64879e;
         }
 
-        .scan-history .history-info .detail i {
-            margin-right: 0.2rem;
-        }
-
         .scan-history .history-time {
             font-size: 0.75rem;
             color: #64879e;
@@ -597,60 +529,8 @@
             margin-bottom: 0.5rem;
         }
 
-        .info-bar {
-            background: #e3eff8;
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.3rem;
-            font-size: 0.8rem;
-            color: #1f4a61;
-        }
-
-        .info-bar .count {
-            font-weight: 600;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .status-badge.waiting {
-            background: #fff3e0;
-            color: #e65100;
-        }
-
-        .status-badge.scanning {
-            background: #e3f2fd;
-            color: #0d47a1;
-            animation: blink 0.8s infinite;
-        }
-
-        .status-badge.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-badge.error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         /* ============================================================
-           SUCCESS POPUP
+           POPUP
            ============================================================ */
         .popup-overlay {
             display: none;
@@ -887,7 +767,7 @@
         }
 
         /* ============================================================
-           TABLE
+           TABLE - UNTUK DATA SISWA
            ============================================================ */
         .table-wrapper {
             background: white;
@@ -1073,6 +953,101 @@
 
         .class-tag .remove:hover {
             color: #a33a3a;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem 1.5rem;
+            background: #f8fcff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            border: 1px solid #e0ecf5;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f4a61;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required {
+            color: #c84e4e;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.6rem 1rem;
+            border: 2px solid #dce8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: white;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .form-group .input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .form-group .input-wrapper button {
+            white-space: nowrap;
+            padding: 0.6rem 1rem;
+            background: #e3eff8;
+            border: 2px solid #b6cfdf;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1b4c64;
+            transition: 0.2s;
+        }
+
+        .form-group .input-wrapper button:hover {
+            background: #c8dbe9;
+        }
+
+        .form-group .file-preview {
+            margin-top: 0.3rem;
+        }
+
+        .form-group .file-preview img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #b6cfdf;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
         }
 
         .modal-overlay {
@@ -1319,7 +1294,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: DATA SISWA (DIPERLUKAN UNTUK CRUD)
+         TAB: DATA SISWA
          ============================================================ -->
     <div class="tab-content" id="tabStudents">
         <div class="bulk-bar">
@@ -1476,7 +1451,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN QR/BARCODE - MENGGUNAKAN HTML5-QRCODE
+         TAB: SCAN QR/BARCODE - FIXED
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
@@ -1495,7 +1470,7 @@
 
             <div class="scanner-wrapper">
                 <div class="scanner-container">
-                    <div id="scanner-container"></div>
+                    <div id="reader"></div>
                     <div class="scanner-overlay">
                         <div class="scanner-frame">
                             <div class="corner tl"></div>
@@ -1520,10 +1495,10 @@
                     </div>
 
                     <div class="scanner-buttons">
-                        <button class="btn btn-primary" onclick="startScannerHtml5()">
+                        <button class="btn btn-primary" onclick="startScanner()">
                             <i class="fas fa-play"></i> Mulai Scan
                         </button>
-                        <button class="btn btn-danger" onclick="stopScannerHtml5()">
+                        <button class="btn btn-danger" onclick="stopScanner()">
                             <i class="fas fa-stop"></i> Berhenti
                         </button>
                         <button class="btn btn-outline" onclick="clearScanHistory()">
@@ -1637,7 +1612,7 @@
     let pendingFoto = null;
     let scanHistory = [];
 
-    // Scanner state (HTML5-QRCODE)
+    // Scanner state
     let html5Scanner = null;
     let isScanning = false;
 
@@ -1777,8 +1752,6 @@
 
         console.log('📱 Admin & Scanner (HTML5-QRCode) siap digunakan!');
         console.log(`📚 Total siswa: ${students.length}`);
-        console.log(`📋 Total kelas: ${classList.length}`);
-        console.log('💡 Tips: Scan QR Code atau Barcode dengan kamera');
     }
 
     // ============================================================
@@ -2362,44 +2335,25 @@
     }
 
     // ============================================================
-    // SCANNER - HTML5-QRCODE (SUPPORT QR CODE & BARCODE)
+    // SCANNER - HTML5-QRCODE FIXED
     // ============================================================
-    function startScannerHtml5() {
+    function startScanner() {
         if (isScanning) {
             showToast('Scanner sudah berjalan', 'info');
             return;
         }
 
-        const container = document.getElementById('scanner-container');
         const status = document.getElementById('scanStatusBadge');
         const statusText = document.getElementById('scannerStatus');
 
-        // Clear container
-        container.innerHTML = '';
-
         try {
-            // Initialize Html5Qrcode
-            html5Scanner = new Html5Qrcode("scanner-container");
+            // Create new instance
+            html5Scanner = new Html5Qrcode("reader");
 
             const config = {
-                fps: 30,
+                fps: 20,
                 qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.QR_CODE,
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.CODE_39,
-                    Html5QrcodeSupportedFormats.EAN_13,
-                    Html5QrcodeSupportedFormats.EAN_8,
-                    Html5QrcodeSupportedFormats.UPC_A,
-                    Html5QrcodeSupportedFormats.UPC_E,
-                    Html5QrcodeSupportedFormats.ITF,
-                    Html5QrcodeSupportedFormats.CODABAR,
-                    Html5QrcodeSupportedFormats.DATA_MATRIX,
-                    Html5QrcodeSupportedFormats.AZTEC,
-                    Html5QrcodeSupportedFormats.PDF_417,
-                    Html5QrcodeSupportedFormats.MAXICODE
-                ]
+                aspectRatio: 1.0
             };
 
             isScanning = true;
@@ -2411,26 +2365,23 @@
                 { facingMode: "environment" },
                 config,
                 onScanSuccess,
-                onScanFailure
+                onScanError
             );
 
         } catch (err) {
             console.error('Scanner error:', err);
             status.className = 'status-badge error';
-            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal akses kamera';
-            statusText.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#c84e4e;"></i> <span>⚠️ Gagal mengakses kamera! Pastikan izin kamera diberikan.</span>';
-            showToast('⚠️ Gagal mengakses kamera!', 'error');
+            status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal';
+            statusText.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#c84e4e;"></i> <span>⚠️ ' + err.message + '</span>';
+            showToast('⚠️ Gagal mengakses kamera: ' + err.message, 'error');
             isScanning = false;
         }
     }
 
     function onScanSuccess(decodedText, decodedResult) {
-        // Get format
-        const format = decodedResult?.result?.format?.formatName || 'Unknown';
-
         // Update status
         const statusText = document.getElementById('scannerStatus');
-        statusText.innerHTML = `<i class="fas fa-check-circle" style="color:#2b8c6b;"></i> <span>✅ Terdeteksi: <strong>${decodedText}</strong> (${format})</span>`;
+        statusText.innerHTML = `<i class="fas fa-check-circle" style="color:#2b8c6b;"></i> <span>✅ Terdeteksi: <strong>${decodedText}</strong></span>`;
 
         // Vibrate
         if (navigator.vibrate) navigator.vibrate(200);
@@ -2439,14 +2390,14 @@
         processAttendance(decodedText);
 
         // Stop scanning after successful detection
-        stopScannerHtml5();
+        stopScanner();
     }
 
-    function onScanFailure(error) {
+    function onScanError(error) {
         // Silent ignore - this is called continuously
     }
 
-    function stopScannerHtml5() {
+    function stopScanner() {
         if (html5Scanner) {
             try {
                 html5Scanner.stop().then(() => {
@@ -2541,7 +2492,6 @@
     // ============================================================
     function showSuccessPopup(student, type, errorMessage) {
         const overlay = document.getElementById('successPopup');
-        const container = document.getElementById('popupContainer');
         const icon = document.getElementById('popupIcon');
         const avatar = document.getElementById('popupAvatar');
         const avatarImg = document.getElementById('popupAvatarImg');
@@ -2726,7 +2676,7 @@
             }, 500);
         } else {
             if (isScanning) {
-                stopScannerHtml5();
+                stopScanner();
             }
         }
     }
@@ -2768,7 +2718,7 @@
     // Cleanup scanner on page unload
     window.addEventListener('beforeunload', function() {
         if (isScanning) {
-            stopScannerHtml5();
+            stopScanner();
         }
     });
 
@@ -2776,7 +2726,7 @@
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
             if (isScanning) {
-                stopScannerHtml5();
+                stopScanner();
             }
         }
     });
@@ -2805,8 +2755,8 @@
     window.clearSelection = clearSelection;
     window.bulkClassChange = bulkClassChange;
     window.updateClass = updateClass;
-    window.startScannerHtml5 = startScannerHtml5;
-    window.stopScannerHtml5 = stopScannerHtml5;
+    window.startScanner = startScanner;
+    window.stopScanner = stopScanner;
     window.manualCheck = manualCheck;
     window.processAttendance = processAttendance;
     window.showSuccessPopup = showSuccessPopup;
