@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin & Scan QR/Barcode - Absensi Siswa</title>
+    <title>Admin & Scan Barcode - Realtime Firebase</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ============================================================
+           RESET & GLOBAL
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -73,15 +76,31 @@
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .firebase-connected {
             background: #e8f5e9;
             color: #2e7d32;
         }
+        .firebase-connected .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #2e7d32;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
         .firebase-disconnected {
             background: #ffebee;
             color: #c62828;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.7); }
         }
 
         .btn {
@@ -233,8 +252,119 @@
             color: #2a7f9e;
         }
 
+        .realtime-badge {
+            font-size: 0.6rem;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.1rem 0.6rem;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .realtime-badge .live-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #2e7d32;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
         /* ============================================================
-           SCANNER - PERBAIKAN
+           FORM
+           ============================================================ */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem 1.5rem;
+            background: #f8fcff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            border: 1px solid #e0ecf5;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f4a61;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required {
+            color: #c84e4e;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.6rem 1rem;
+            border: 2px solid #dce8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: white;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+        }
+
+        .form-group .input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .form-group .input-wrapper button {
+            white-space: nowrap;
+            padding: 0.6rem 1rem;
+            background: #e3eff8;
+            border: 2px solid #b6cfdf;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1b4c64;
+            transition: 0.2s;
+        }
+
+        .form-group .file-preview {
+            margin-top: 0.3rem;
+        }
+
+        .form-group .file-preview img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #b6cfdf;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        /* ============================================================
+           SCANNER
            ============================================================ */
         .scanner-wrapper {
             display: grid;
@@ -263,10 +393,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        #reader img {
-            display: none;
         }
 
         .scanner-overlay {
@@ -371,54 +497,6 @@
         .scanner-buttons .btn {
             flex: 1;
             justify-content: center;
-        }
-
-        .info-bar {
-            background: #e3eff8;
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.3rem;
-            font-size: 0.8rem;
-            color: #1f4a61;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .status-badge.waiting {
-            background: #fff3e0;
-            color: #e65100;
-        }
-
-        .status-badge.scanning {
-            background: #e3f2fd;
-            color: #0d47a1;
-            animation: blink 0.8s infinite;
-        }
-
-        .status-badge.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status-badge.error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         /* ============================================================
@@ -529,245 +607,56 @@
             margin-bottom: 0.5rem;
         }
 
-        /* ============================================================
-           POPUP
-           ============================================================ */
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-        }
-
-        .popup-overlay.active {
-            display: flex;
-            animation: overlayIn 0.3s ease;
-        }
-
-        @keyframes overlayIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .popup-container {
-            background: white;
-            border-radius: 32px;
-            padding: 2.5rem 2rem;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.7) translateY(50px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .popup-container .popup-icon {
-            font-size: 5rem;
-            margin-bottom: 0.5rem;
-            animation: iconPop 0.6s ease;
-        }
-
-        @keyframes iconPop {
-            0% { transform: scale(0) rotate(-30deg); opacity: 0; }
-            50% { transform: scale(1.3) rotate(5deg); }
-            70% { transform: scale(0.9) rotate(-3deg); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        .popup-container .popup-icon .fa-check-circle {
-            color: #2b8c6b;
-            filter: drop-shadow(0 10px 30px rgba(43, 140, 107, 0.3));
-        }
-
-        .popup-container .popup-icon .fa-times-circle {
-            color: #c62828;
-            filter: drop-shadow(0 10px 30px rgba(198, 40, 40, 0.3));
-        }
-
-        .popup-container .popup-icon .fa-exclamation-triangle {
-            color: #e65100;
-            filter: drop-shadow(0 10px 30px rgba(230, 81, 0, 0.3));
-        }
-
-        .popup-container .popup-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 0.8rem;
-            border: 4px solid #2b8c6b;
-            box-shadow: 0 0 30px rgba(43, 140, 107, 0.2);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .info-bar {
             background: #e3eff8;
-            animation: avatarPop 0.6s ease 0.2s both;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: #1f4a61;
         }
 
-        @keyframes avatarPop {
-            from { transform: scale(0) rotate(-20deg); opacity: 0; }
-            to { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        .popup-container .popup-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .popup-container .popup-avatar .default-avatar {
-            font-size: 3rem;
-            color: #2a7f9e;
-        }
-
-        .popup-container .popup-avatar.border-error {
-            border-color: #c62828;
-            box-shadow: 0 0 30px rgba(198, 40, 40, 0.2);
-        }
-
-        .popup-container .popup-avatar.border-warning {
-            border-color: #e65100;
-            box-shadow: 0 0 30px rgba(230, 81, 0, 0.2);
-        }
-
-        .popup-container .popup-avatar.border-success {
-            border-color: #2b8c6b;
-            box-shadow: 0 0 30px rgba(43, 140, 107, 0.2);
-        }
-
-        .popup-container .popup-status {
+        .status-badge {
             display: inline-block;
-            padding: 0.3rem 1.5rem;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 0.3rem;
-            animation: statusPop 0.5s ease 0.3s both;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
 
-        @keyframes statusPop {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .popup-container .popup-status.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .popup-container .popup-status.already {
+        .status-badge.waiting {
             background: #fff3e0;
             color: #e65100;
         }
 
-        .popup-container .popup-status.error {
+        .status-badge.scanning {
+            background: #e3f2fd;
+            color: #0d47a1;
+            animation: blink 0.8s infinite;
+        }
+
+        .status-badge.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge.error {
             background: #ffebee;
             color: #c62828;
         }
 
-        .popup-container .popup-name {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #0a2a3e;
-            margin-top: 0.3rem;
-            animation: textPop 0.5s ease 0.4s both;
-        }
-
-        @keyframes textPop {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .popup-container .popup-detail {
-            color: #64879e;
-            font-size: 0.95rem;
-            margin: 0.1rem 0;
-            animation: textPop 0.5s ease 0.5s both;
-        }
-
-        .popup-container .popup-detail i {
-            margin-right: 0.3rem;
-            color: #2a7f9e;
-        }
-
-        .popup-container .popup-code {
-            background: #f0f7fc;
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            font-family: 'Courier New', monospace;
-            color: #1f5a77;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: inline-block;
-            border: 1px solid #dce8f0;
-            animation: textPop 0.5s ease 0.6s both;
-        }
-
-        .popup-container .popup-time {
-            color: #888;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-            animation: textPop 0.5s ease 0.7s both;
-        }
-
-        .popup-container .popup-close-btn {
-            margin-top: 1.5rem;
-            padding: 0.7rem 2.5rem;
-            background: #1f5a77;
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            animation: textPop 0.5s ease 0.8s both;
-        }
-
-        .popup-container .popup-close-btn:hover {
-            background: #134a63;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(26, 80, 107, 0.3);
-        }
-
-        .popup-container .popup-close-btn.btn-error {
-            background: #c62828;
-        }
-
-        .popup-container .popup-close-btn.btn-error:hover {
-            background: #b13b3b;
-            box-shadow: 0 8px 25px rgba(198, 40, 40, 0.3);
-        }
-
-        .popup-container .popup-close-btn.btn-warning {
-            background: #e65100;
-        }
-
-        .popup-container .popup-close-btn.btn-warning:hover {
-            background: #c84e4e;
-            box-shadow: 0 8px 25px rgba(230, 81, 0, 0.3);
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         /* ============================================================
-           TABLE - UNTUK DATA SISWA
+           TABLE
            ============================================================ */
         .table-wrapper {
             background: white;
@@ -829,20 +718,6 @@
             display: inline-block;
             font-weight: 600;
             cursor: pointer;
-        }
-
-        .student-code-unique:hover {
-            opacity: 0.8;
-        }
-
-        .class-badge {
-            background: #e3f0fa;
-            color: #1f5a77;
-            padding: 0.15rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            display: inline-block;
         }
 
         .class-badge-select {
@@ -955,101 +830,264 @@
             color: #a33a3a;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem 1.5rem;
-            background: #f8fcff;
-            padding: 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 1rem;
-            border: 1px solid #e0ecf5;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #1f4a61;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group label .required {
-            color: #c84e4e;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 0.6rem 1rem;
-            border: 2px solid #dce8f0;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: 0.2s;
-            background: white;
-            outline: none;
-            width: 100%;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #2a7f9e;
-            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 50px;
-        }
-
-        .form-group .input-wrapper {
-            display: flex;
-            gap: 0.5rem;
+        /* ============================================================
+           POPUP
+           ============================================================ */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
+            padding: 1.5rem;
         }
 
-        .form-group .input-wrapper button {
-            white-space: nowrap;
-            padding: 0.6rem 1rem;
-            background: #e3eff8;
-            border: 2px solid #b6cfdf;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #1b4c64;
-            transition: 0.2s;
-        }
-
-        .form-group .input-wrapper button:hover {
-            background: #c8dbe9;
-        }
-
-        .form-group .file-preview {
-            margin-top: 0.3rem;
-        }
-
-        .form-group .file-preview img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #b6cfdf;
-        }
-
-        .form-actions {
+        .popup-overlay.active {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
+            animation: overlayIn 0.3s ease;
         }
 
+        @keyframes overlayIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup-container {
+            background: white;
+            border-radius: 32px;
+            padding: 2.5rem 2rem;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.7) translateY(50px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .popup-container .popup-icon {
+            font-size: 5rem;
+            margin-bottom: 0.5rem;
+            animation: iconPop 0.6s ease;
+        }
+
+        @keyframes iconPop {
+            0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+            50% { transform: scale(1.3) rotate(5deg); }
+            70% { transform: scale(0.9) rotate(-3deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .popup-container .popup-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 0.8rem;
+            border: 4px solid #2b8c6b;
+            box-shadow: 0 0 30px rgba(43, 140, 107, 0.2);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e3eff8;
+            animation: avatarPop 0.6s ease 0.2s both;
+        }
+
+        @keyframes avatarPop {
+            from { transform: scale(0) rotate(-20deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .popup-container .popup-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .popup-container .popup-avatar .default-avatar {
+            font-size: 3rem;
+            color: #2a7f9e;
+        }
+
+        .popup-container .popup-avatar.border-error {
+            border-color: #c62828;
+            box-shadow: 0 0 30px rgba(198, 40, 40, 0.2);
+        }
+
+        .popup-container .popup-avatar.border-warning {
+            border-color: #e65100;
+            box-shadow: 0 0 30px rgba(230, 81, 0, 0.2);
+        }
+
+        .popup-container .popup-avatar.border-success {
+            border-color: #2b8c6b;
+            box-shadow: 0 0 30px rgba(43, 140, 107, 0.2);
+        }
+
+        .popup-container .popup-status {
+            display: inline-block;
+            padding: 0.3rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.3rem;
+            animation: statusPop 0.5s ease 0.3s both;
+        }
+
+        @keyframes statusPop {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .popup-container .popup-status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .popup-container .popup-status.already {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .popup-container .popup-status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .popup-container .popup-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0a2a3e;
+            margin-top: 0.3rem;
+            animation: textPop 0.5s ease 0.4s both;
+        }
+
+        @keyframes textPop {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .popup-container .popup-detail {
+            color: #64879e;
+            font-size: 0.95rem;
+            margin: 0.1rem 0;
+            animation: textPop 0.5s ease 0.5s both;
+        }
+
+        .popup-container .popup-code {
+            background: #f0f7fc;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            font-family: 'Courier New', monospace;
+            color: #1f5a77;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+            border: 1px solid #dce8f0;
+            animation: textPop 0.5s ease 0.6s both;
+        }
+
+        .popup-container .popup-time {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            animation: textPop 0.5s ease 0.7s both;
+        }
+
+        .popup-container .popup-close-btn {
+            margin-top: 1.5rem;
+            padding: 0.7rem 2.5rem;
+            background: #1f5a77;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: textPop 0.5s ease 0.8s both;
+        }
+
+        .popup-container .popup-close-btn:hover {
+            background: #134a63;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 80, 107, 0.3);
+        }
+
+        .popup-container .popup-close-btn.btn-error {
+            background: #c62828;
+        }
+
+        .popup-container .popup-close-btn.btn-error:hover {
+            background: #b13b3b;
+            box-shadow: 0 8px 25px rgba(198, 40, 40, 0.3);
+        }
+
+        .popup-container .popup-close-btn.btn-warning {
+            background: #e65100;
+        }
+
+        .popup-container .popup-close-btn.btn-warning:hover {
+            background: #c84e4e;
+            box-shadow: 0 8px 25px rgba(230, 81, 0, 0.3);
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f5a77;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 9999;
+            animation: slideUp 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.error {
+            background: #c84e4e;
+        }
+
+        .toast.success {
+            background: #2b8c6b;
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 20px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1164,41 +1202,6 @@
             cursor: pointer;
         }
 
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f5a77;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: none;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 9999;
-            animation: slideUp 0.3s ease;
-            font-weight: 500;
-        }
-
-        .toast.show {
-            display: flex;
-        }
-
-        .toast.error {
-            background: #c84e4e;
-        }
-
-        .toast.success {
-            background: #2b8c6b;
-        }
-
-        @keyframes slideUp {
-            from { transform: translate(-50%, 20px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
-
         @media (max-width: 768px) {
             body { padding: 0.5rem; }
             .header-card { padding: 1rem; flex-direction: column; align-items: stretch; }
@@ -1220,26 +1223,29 @@
 <body>
 
 <div class="container">
+    <!-- Header -->
     <div class="header-card">
         <div>
             <h1>
                 <i class="fas fa-user-graduate"></i> Admin & Scanner
                 <span class="badge" id="totalCount">0 siswa</span>
+                <span class="realtime-badge"><span class="live-dot"></span> LIVE</span>
             </h1>
             <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
-                <i class="fas fa-database"></i> Data tersimpan di Firebase & LocalStorage
+                <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Realtime Firebase - Perubahan langsung terlihat di semua perangkat
             </div>
         </div>
         <div class="header-right">
             <span class="firebase-status firebase-connected" id="firebaseStatus">
-                <i class="fas fa-check-circle"></i> Terhubung
+                <span class="pulse-dot"></span> Terhubung
             </span>
-            <button class="btn btn-outline btn-sm" onclick="syncData()">
-                <i class="fas fa-sync"></i> Sync
+            <button class="btn btn-outline btn-sm" onclick="forceSync()">
+                <i class="fas fa-sync"></i> Sync Manual
             </button>
         </div>
     </div>
 
+    <!-- Tabs -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('dashboard')">
             <i class="fas fa-home"></i> Dashboard
@@ -1255,7 +1261,7 @@
             <i class="fas fa-users"></i> Kelas
         </button>
         <button class="tab-btn" onclick="switchTab('scan')">
-            <i class="fas fa-qrcode"></i> Scan QR/Barcode
+            <i class="fas fa-qrcode"></i> Scan Barcode
             <span class="tab-badge" id="scanBadge">0</span>
         </button>
     </div>
@@ -1265,7 +1271,12 @@
          ============================================================ -->
     <div class="tab-content active" id="tabDashboard">
         <div class="card">
-            <div class="card-title"><i class="fas fa-chart-bar"></i> Dashboard</div>
+            <div class="card-title">
+                <i class="fas fa-chart-bar"></i> Dashboard
+                <span class="realtime-badge" style="font-size:0.65rem;">
+                    <span class="live-dot"></span> Realtime
+                </span>
+            </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
                 <div style="background:#f8fcff; border-radius:16px; padding:1.5rem; text-align:center; border:1px solid #e0ecf5;">
                     <div style="font-size:2.5rem; font-weight:700; color:#2a7f9e;" id="dashTotal">0</div>
@@ -1286,8 +1297,8 @@
             </div>
             <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
                 <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
-                    <span><i class="fas fa-database"></i> Data tersimpan di <strong>Firebase</strong> & <strong>LocalStorage</strong></span>
-                    <span><i class="fas fa-sync"></i> Sinkronisasi otomatis setiap 30 detik</span>
+                    <span><i class="fas fa-bolt" style="color:#2b8c6b;"></i> <strong>Realtime</strong> - Semua perubahan langsung tersinkronisasi</span>
+                    <span><i class="fas fa-clock"></i> Diperbarui otomatis dari Firebase</span>
                 </div>
             </div>
         </div>
@@ -1451,11 +1462,16 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN QR/BARCODE - FIXED
+         TAB: SCAN BARCODE - REALTIME
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
-            <div class="card-title"><i class="fas fa-qrcode"></i> Scan QR Code / Barcode</div>
+            <div class="card-title">
+                <i class="fas fa-qrcode"></i> Scan Barcode
+                <span class="realtime-badge" style="font-size:0.65rem;">
+                    <span class="live-dot"></span> Realtime
+                </span>
+            </div>
 
             <div class="info-bar">
                 <span><i class="fas fa-users"></i> <span id="scanTotalSiswa">0</span> siswa</span>
@@ -1515,7 +1531,7 @@
                         <span class="badge" id="historyCount" style="background:#d4e3ef; color:#134a63; border-radius:40px; padding:0.1rem 0.8rem; font-size:0.7rem;">0</span>
                     </div>
                     <div style="font-size:0.75rem; color:#64879e;">
-                        <i class="fas fa-info-circle"></i> Mendukung QR Code & Barcode
+                        <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Update realtime dari Firebase
                     </div>
                 </div>
 
@@ -1534,7 +1550,7 @@
      SUCCESS POPUP
      ============================================================ -->
 <div class="popup-overlay" id="successPopup">
-    <div class="popup-container" id="popupContainer">
+    <div class="popup-container">
         <div class="popup-icon" id="popupIcon">
             <i class="fas fa-check-circle"></i>
         </div>
@@ -1554,13 +1570,24 @@
     </div>
 </div>
 
+<!-- Modal Detail -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <h2 id="modalTitle">Detail Siswa</h2>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast">
     <i class="fas fa-info-circle"></i>
     <span id="toastMsg">Pesan</span>
 </div>
 
-<!-- Firebase SDK -->
+<!-- ============================================================
+     FIREBASE SDK
+     ============================================================ -->
 <script type="importmap">
 {
     "imports": {
@@ -1572,7 +1599,7 @@
 
 <script type="module">
     import { initializeApp } from "firebase/app";
-    import { getDatabase, ref, set, get, child, onValue } from "firebase/database";
+    import { getDatabase, ref, set, get, child, onValue, update, remove } from "firebase/database";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCFkIrTY4WLburyAdgJJ1c24bNx9Ldt1x8",
@@ -1586,16 +1613,18 @@
 
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
+    const dbRef = ref;
 
     window.db = database;
-    window.dbRef = ref;
+    window.dbRef = dbRef;
     window.dbGet = get;
     window.dbSet = set;
     window.dbChild = child;
     window.dbOnValue = onValue;
+    window.dbUpdate = update;
+    window.dbRemove = remove;
 
-    document.getElementById('firebaseStatus').innerHTML = '<i class="fas fa-check-circle"></i> Terhubung';
-    document.getElementById('firebaseStatus').className = 'firebase-status firebase-connected';
+    console.log('🔥 Firebase Realtime Connected!');
 </script>
 
 <script>
@@ -1611,6 +1640,8 @@
     let isSaving = false;
     let pendingFoto = null;
     let scanHistory = [];
+    let isFirebaseReady = false;
+    let isLocalUpdate = false;
 
     // Scanner state
     let html5Scanner = null;
@@ -1632,41 +1663,73 @@
     }
 
     // ============================================================
-    // FIREBASE OPERATIONS
+    // FIREBASE REALTIME LISTENERS
     // ============================================================
-    async function loadFromFirebase() {
-        try {
-            const db = window.db;
-            const dbRef = window.dbRef;
-            const dbGet = window.dbGet;
-            const dbChild = window.dbChild;
+    function setupRealtimeListeners() {
+        const db = window.db;
+        const dbRef = window.dbRef;
+        const dbOnValue = window.dbOnValue;
 
-            const snapshot = await dbGet(dbChild(dbRef(db), 'absensiData'));
-
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                if (data.students) {
-                    students = Object.values(data.students).filter(s => s !== null);
+        // Listen to students data
+        const studentsRef = dbRef(db, 'absensiData/students');
+        dbOnValue(studentsRef, (snapshot) => {
+            if (isLocalUpdate) return;
+            const data = snapshot.val();
+            if (data) {
+                const newStudents = Object.values(data).filter(s => s !== null);
+                // Check if data really changed
+                if (JSON.stringify(newStudents) !== JSON.stringify(students)) {
+                    students = newStudents;
                     nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                    renderAll();
+                    updateDashboard();
+                    updateScanInfo();
+                    console.log('📥 Students updated from Firebase (realtime)');
                 }
-                if (data.attendance) {
-                    attendance = data.attendance;
-                }
-                if (data.classes) {
-                    classList = data.classes;
-                }
-                return true;
             }
-            return false;
-        } catch (error) {
-            console.error('Load error:', error);
-            return false;
-        }
+        });
+
+        // Listen to attendance data
+        const attendanceRef = dbRef(db, 'absensiData/attendance');
+        dbOnValue(attendanceRef, (snapshot) => {
+            if (isLocalUpdate) return;
+            const data = snapshot.val();
+            if (data) {
+                if (JSON.stringify(data) !== JSON.stringify(attendance)) {
+                    attendance = data;
+                    renderAll();
+                    updateDashboard();
+                    updateScanInfo();
+                    console.log('📥 Attendance updated from Firebase (realtime)');
+                }
+            }
+        });
+
+        // Listen to classes data
+        const classesRef = dbRef(db, 'absensiData/classes');
+        dbOnValue(classesRef, (snapshot) => {
+            if (isLocalUpdate) return;
+            const data = snapshot.val();
+            if (data) {
+                if (JSON.stringify(data) !== JSON.stringify(classList)) {
+                    classList = data;
+                    renderAll();
+                    updateDashboard();
+                    console.log('📥 Classes updated from Firebase (realtime)');
+                }
+            }
+        });
+
+        console.log('🔄 Realtime listeners activated!');
     }
 
+    // ============================================================
+    // SAVE TO FIREBASE
+    // ============================================================
     async function saveToFirebase() {
         if (isSaving) return;
         isSaving = true;
+        isLocalUpdate = true;
 
         try {
             const db = window.db;
@@ -1681,26 +1744,30 @@
             };
 
             await dbSet(dbRef(db, 'absensiData'), data);
+            console.log('💾 Data saved to Firebase');
             return true;
         } catch (error) {
             console.error('Save error:', error);
             return false;
         } finally {
             isSaving = false;
+            setTimeout(() => { isLocalUpdate = false; }, 500);
         }
     }
 
-    async function syncData() {
-        showToast('Menyinkronkan data...');
-        const loaded = await loadFromFirebase();
-        if (loaded) {
-            renderAll();
-            updateDashboard();
-            updateScanInfo();
-            showToast('✅ Data dimuat dari Firebase');
-        } else {
+    // ============================================================
+    // FORCE SYNC
+    // ============================================================
+    async function forceSync() {
+        showToast('🔄 Menyinkronkan data...');
+        isLocalUpdate = true;
+        try {
             await saveToFirebase();
-            showToast('✅ Data disimpan ke Firebase');
+            showToast('✅ Data tersinkronisasi ke Firebase', 'success');
+        } catch (e) {
+            showToast('❌ Gagal sinkronisasi', 'error');
+        } finally {
+            setTimeout(() => { isLocalUpdate = false; }, 500);
         }
     }
 
@@ -1708,7 +1775,8 @@
     // INIT
     // ============================================================
     async function initApp() {
-        const stored = localStorage.getItem('siswaData');
+        // Load from localStorage first (fast)
+        const stored = localStorage.getItem('siswaData_realtime');
         if (stored) {
             try {
                 const data = JSON.parse(stored);
@@ -1719,7 +1787,8 @@
             } catch (e) {}
         }
 
-        const storedHistory = localStorage.getItem('scanHistory');
+        // Load scan history
+        const storedHistory = localStorage.getItem('scanHistory_realtime');
         if (storedHistory) {
             try {
                 const today = new Date().toISOString().split('T')[0];
@@ -1728,6 +1797,7 @@
             } catch (e) {}
         }
 
+        // If no data, use default
         if (students.length === 0) {
             const defaultData = getDefaultData();
             students = defaultData.students;
@@ -1736,22 +1806,26 @@
             nextId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
         }
 
-        await loadFromFirebase();
+        // Setup Firebase realtime listeners
+        setupRealtimeListeners();
 
+        // Save initial data to Firebase
+        await saveToFirebase();
+
+        // Render
         renderAll();
         updateDashboard();
         updateScanInfo();
         renderScanHistory();
 
-        setInterval(async () => {
-            await loadFromFirebase();
-            renderAll();
-            updateDashboard();
-            updateScanInfo();
-        }, 30000);
+        // Update status
+        document.getElementById('firebaseStatus').innerHTML = '<span class="pulse-dot"></span> Terhubung (Realtime)';
+        document.getElementById('firebaseStatus').className = 'firebase-status firebase-connected';
 
-        console.log('📱 Admin & Scanner (HTML5-QRCode) siap digunakan!');
+        console.log('📱 Realtime Admin & Scanner siap digunakan!');
         console.log(`📚 Total siswa: ${students.length}`);
+        console.log(`📋 Total kelas: ${classList.length}`);
+        console.log('🔄 Semua perubahan langsung tersinkronisasi ke semua perangkat');
     }
 
     // ============================================================
@@ -1762,7 +1836,8 @@
         renderClassTags();
         updateClassDropdowns();
         updateCounts();
-        localStorage.setItem('siswaData', JSON.stringify({ students, attendance, classes: classList }));
+        // Save to localStorage as backup
+        localStorage.setItem('siswaData_realtime', JSON.stringify({ students, attendance, classes: classList }));
     }
 
     function renderTable() {
@@ -1955,7 +2030,7 @@
 
         scanHistory.push(entry);
 
-        const storedHistory = localStorage.getItem('scanHistory');
+        const storedHistory = localStorage.getItem('scanHistory_realtime');
         let allHistory = {};
         if (storedHistory) {
             try {
@@ -1966,7 +2041,7 @@
             allHistory[today] = [];
         }
         allHistory[today] = scanHistory;
-        localStorage.setItem('scanHistory', JSON.stringify(allHistory));
+        localStorage.setItem('scanHistory_realtime', JSON.stringify(allHistory));
 
         renderScanHistory();
     }
@@ -1981,12 +2056,12 @@
         const today = new Date().toISOString().split('T')[0];
         scanHistory = [];
 
-        const storedHistory = localStorage.getItem('scanHistory');
+        const storedHistory = localStorage.getItem('scanHistory_realtime');
         if (storedHistory) {
             try {
                 const allHistory = JSON.parse(storedHistory);
                 delete allHistory[today];
-                localStorage.setItem('scanHistory', JSON.stringify(allHistory));
+                localStorage.setItem('scanHistory_realtime', JSON.stringify(allHistory));
             } catch (e) {}
         }
 
@@ -1996,7 +2071,7 @@
     }
 
     // ============================================================
-    // STUDENT CRUD
+    // STUDENT CRUD - WITH REALTIME SYNC
     // ============================================================
     function getFormData() {
         return {
@@ -2335,7 +2410,7 @@
     }
 
     // ============================================================
-    // SCANNER - HTML5-QRCODE FIXED
+    // SCANNER
     // ============================================================
     function startScanner() {
         if (isScanning) {
@@ -2347,7 +2422,6 @@
         const statusText = document.getElementById('scannerStatus');
 
         try {
-            // Create new instance
             html5Scanner = new Html5Qrcode("reader");
 
             const config = {
@@ -2379,23 +2453,15 @@
     }
 
     function onScanSuccess(decodedText, decodedResult) {
-        // Update status
         const statusText = document.getElementById('scannerStatus');
         statusText.innerHTML = `<i class="fas fa-check-circle" style="color:#2b8c6b;"></i> <span>✅ Terdeteksi: <strong>${decodedText}</strong></span>`;
 
-        // Vibrate
         if (navigator.vibrate) navigator.vibrate(200);
-
-        // Process attendance
         processAttendance(decodedText);
-
-        // Stop scanning after successful detection
         stopScanner();
     }
 
-    function onScanError(error) {
-        // Silent ignore - this is called continuously
-    }
+    function onScanError(error) {}
 
     function stopScanner() {
         if (html5Scanner) {
@@ -2440,7 +2506,7 @@
     });
 
     // ============================================================
-    // PROCESS ATTENDANCE
+    // PROCESS ATTENDANCE - REALTIME SYNC
     // ============================================================
     async function processAttendance(kode) {
         const student = students.find(s => s.kodeUnik === kode);
@@ -2475,7 +2541,7 @@
         }
         attendance[today][student.id] = 'Hadir';
 
-        localStorage.setItem('siswaData', JSON.stringify({ students, attendance, classes: classList }));
+        // Save to Firebase (realtime)
         await saveToFirebase();
 
         addScanHistory(student, 'Hadir');
@@ -2735,7 +2801,7 @@
     // EXPOSE & INIT
     // ============================================================
     window.switchTab = switchTab;
-    window.syncData = syncData;
+    window.forceSync = forceSync;
     window.generateKode = generateKode;
     window.togglePassword = togglePassword;
     window.copyText = copyText;
