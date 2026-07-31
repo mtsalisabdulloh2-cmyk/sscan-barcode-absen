@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin & Scan QR/Barcode - Absensi Siswa</title>
-    <script src="https://unpkg.com/@zxing/library@0.18.6/umd/index.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ============================================================
@@ -41,9 +41,6 @@
             border-radius: 10px;
         }
 
-        /* ============================================================
-           HEADER
-           ============================================================ */
         .header-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -103,9 +100,6 @@
             color: #c62828;
         }
 
-        /* ============================================================
-           BUTTONS
-           ============================================================ */
         .btn {
             border: none;
             padding: 0.6rem 1.5rem;
@@ -174,9 +168,6 @@
             font-size: 0.7rem;
         }
 
-        /* ============================================================
-           TABS
-           ============================================================ */
         .tabs {
             display: flex;
             gap: 0.5rem;
@@ -238,9 +229,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ============================================================
-           CARDS
-           ============================================================ */
         .card {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(10px);
@@ -265,9 +253,6 @@
             color: #2a7f9e;
         }
 
-        /* ============================================================
-           FORM GRID
-           ============================================================ */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -364,7 +349,7 @@
         }
 
         /* ============================================================
-           SCANNER
+           SCANNER - HTML5-QRCODE
            ============================================================ */
         .scanner-wrapper {
             display: grid;
@@ -384,11 +369,16 @@
             box-shadow: 0 0 30px rgba(42, 127, 158, 0.3);
         }
 
-        #scanner-video {
+        #scanner-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #scanner-container video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
 
         .scanner-overlay {
@@ -1056,9 +1046,6 @@
             margin-bottom: 1rem;
         }
 
-        /* ============================================================
-           CLASS TAGS
-           ============================================================ */
         .class-tags {
             display: flex;
             flex-wrap: wrap;
@@ -1088,9 +1075,6 @@
             color: #a33a3a;
         }
 
-        /* ============================================================
-           MODAL
-           ============================================================ */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1205,9 +1189,6 @@
             cursor: pointer;
         }
 
-        /* ============================================================
-           TOAST
-           ============================================================ */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -1243,9 +1224,6 @@
             to { transform: translate(-50%, 0); opacity: 1; }
         }
 
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
         @media (max-width: 768px) {
             body { padding: 0.5rem; }
             .header-card { padding: 1rem; flex-direction: column; align-items: stretch; }
@@ -1267,7 +1245,6 @@
 <body>
 
 <div class="container">
-    <!-- Header -->
     <div class="header-card">
         <div>
             <h1>
@@ -1288,7 +1265,6 @@
         </div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('dashboard')">
             <i class="fas fa-home"></i> Dashboard
@@ -1343,7 +1319,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: DATA SISWA
+         TAB: DATA SISWA (DIPERLUKAN UNTUK CRUD)
          ============================================================ -->
     <div class="tab-content" id="tabStudents">
         <div class="bulk-bar">
@@ -1378,9 +1354,7 @@
                         <th style="text-align:right;">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- Rendered by JS -->
-                </tbody>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
@@ -1502,7 +1476,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN QR/BARCODE
+         TAB: SCAN QR/BARCODE - MENGGUNAKAN HTML5-QRCODE
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
@@ -1521,7 +1495,7 @@
 
             <div class="scanner-wrapper">
                 <div class="scanner-container">
-                    <video id="scanner-video" autoplay playsinline></video>
+                    <div id="scanner-container"></div>
                     <div class="scanner-overlay">
                         <div class="scanner-frame">
                             <div class="corner tl"></div>
@@ -1546,10 +1520,10 @@
                     </div>
 
                     <div class="scanner-buttons">
-                        <button class="btn btn-primary" onclick="startScannerZXing()">
+                        <button class="btn btn-primary" onclick="startScannerHtml5()">
                             <i class="fas fa-play"></i> Mulai Scan
                         </button>
-                        <button class="btn btn-danger" onclick="stopScannerZXing()">
+                        <button class="btn btn-danger" onclick="stopScannerHtml5()">
                             <i class="fas fa-stop"></i> Berhenti
                         </button>
                         <button class="btn btn-outline" onclick="clearScanHistory()">
@@ -1581,7 +1555,9 @@
     </div>
 </div>
 
-<!-- SUCCESS POPUP -->
+<!-- ============================================================
+     SUCCESS POPUP
+     ============================================================ -->
 <div class="popup-overlay" id="successPopup">
     <div class="popup-container" id="popupContainer">
         <div class="popup-icon" id="popupIcon">
@@ -1661,9 +1637,8 @@
     let pendingFoto = null;
     let scanHistory = [];
 
-    // Scanner state (ZXing)
-    let scannerReader = null;
-    let scannerStream = null;
+    // Scanner state (HTML5-QRCODE)
+    let html5Scanner = null;
     let isScanning = false;
 
     // ============================================================
@@ -1800,9 +1775,10 @@
             updateScanInfo();
         }, 30000);
 
-        console.log('📱 Admin & Scanner (ZXing) siap digunakan!');
+        console.log('📱 Admin & Scanner (HTML5-QRCode) siap digunakan!');
         console.log(`📚 Total siswa: ${students.length}`);
         console.log(`📋 Total kelas: ${classList.length}`);
+        console.log('💡 Tips: Scan QR Code atau Barcode dengan kamera');
     }
 
     // ============================================================
@@ -2386,130 +2362,101 @@
     }
 
     // ============================================================
-    // SCANNER ZXing (SUPPORT QR CODE & BARCODE)
+    // SCANNER - HTML5-QRCODE (SUPPORT QR CODE & BARCODE)
     // ============================================================
-    async function startScannerZXing() {
+    function startScannerHtml5() {
         if (isScanning) {
             showToast('Scanner sudah berjalan', 'info');
             return;
         }
 
-        const video = document.getElementById('scanner-video');
+        const container = document.getElementById('scanner-container');
         const status = document.getElementById('scanStatusBadge');
         const statusText = document.getElementById('scannerStatus');
 
+        // Clear container
+        container.innerHTML = '';
+
         try {
-            // Request camera
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' }
-            });
-            scannerStream = stream;
-            video.srcObject = stream;
-            await video.play();
+            // Initialize Html5Qrcode
+            html5Scanner = new Html5Qrcode("scanner-container");
 
-            // Create ZXing reader
-            const hints = new Map();
-            const formats = [
-                ZXing.BarcodeFormat.QR_CODE,
-                ZXing.BarcodeFormat.CODE_128,
-                ZXing.BarcodeFormat.CODE_39,
-                ZXing.BarcodeFormat.EAN_13,
-                ZXing.BarcodeFormat.EAN_8,
-                ZXing.BarcodeFormat.UPC_A,
-                ZXing.BarcodeFormat.UPC_E,
-                ZXing.BarcodeFormat.ITF,
-                ZXing.BarcodeFormat.CODABAR,
-                ZXing.BarcodeFormat.DATA_MATRIX,
-                ZXing.BarcodeFormat.AZTEC,
-                ZXing.BarcodeFormat.PDF_417,
-                ZXing.BarcodeFormat.MAXICODE
-            ];
-            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
+            const config = {
+                fps: 30,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0,
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.QR_CODE,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39,
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.ITF,
+                    Html5QrcodeSupportedFormats.CODABAR,
+                    Html5QrcodeSupportedFormats.DATA_MATRIX,
+                    Html5QrcodeSupportedFormats.AZTEC,
+                    Html5QrcodeSupportedFormats.PDF_417,
+                    Html5QrcodeSupportedFormats.MAXICODE
+                ]
+            };
 
-            scannerReader = new ZXing.BrowserMultiFormatReader(hints);
             isScanning = true;
-
             status.className = 'status-badge scanning';
             status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memindai...';
             statusText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>📷 Memindai QR Code / Barcode...</span>';
 
-            // Start decoding loop
-            scanLoop();
+            html5Scanner.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                onScanFailure
+            );
 
         } catch (err) {
-            console.error('Camera error:', err);
+            console.error('Scanner error:', err);
             status.className = 'status-badge error';
             status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal akses kamera';
             statusText.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#c84e4e;"></i> <span>⚠️ Gagal mengakses kamera! Pastikan izin kamera diberikan.</span>';
             showToast('⚠️ Gagal mengakses kamera!', 'error');
+            isScanning = false;
         }
     }
 
-    let scanLoopRunning = false;
+    function onScanSuccess(decodedText, decodedResult) {
+        // Get format
+        const format = decodedResult?.result?.format?.formatName || 'Unknown';
 
-    async function scanLoop() {
-        if (!isScanning) return;
-        if (scanLoopRunning) return;
-        scanLoopRunning = true;
+        // Update status
+        const statusText = document.getElementById('scannerStatus');
+        statusText.innerHTML = `<i class="fas fa-check-circle" style="color:#2b8c6b;"></i> <span>✅ Terdeteksi: <strong>${decodedText}</strong> (${format})</span>`;
 
-        try {
-            const video = document.getElementById('scanner-video');
-            if (!video || video.readyState < 2) {
-                scanLoopRunning = false;
-                setTimeout(scanLoop, 500);
-                return;
-            }
+        // Vibrate
+        if (navigator.vibrate) navigator.vibrate(200);
 
-            const result = await scannerReader.decodeFromVideoElement(video);
-            if (result && result.text) {
-                const code = result.text.trim();
-                // Get barcode format
-                const format = result.getBarcodeFormat ? 
-                    ZXing.BarcodeFormat[result.getBarcodeFormat()] : 
-                    'Unknown';
+        // Process attendance
+        processAttendance(decodedText);
 
-                // Update status with detected format
-                const statusText = document.getElementById('scannerStatus');
-                statusText.innerHTML = `<i class="fas fa-check-circle" style="color:#2b8c6b;"></i> <span>✅ Terdeteksi: <strong>${code}</strong> (${format})</span>`;
-
-                // Vibrate on successful scan
-                if (navigator.vibrate) navigator.vibrate(200);
-
-                // Process attendance
-                processAttendance(code);
-
-                // Stop scanning after successful detection
-                stopScannerZXing();
-                scanLoopRunning = false;
-                return;
-            }
-        } catch (err) {
-            // Silently ignore decode errors
-        }
-
-        scanLoopRunning = false;
-        if (isScanning) {
-            setTimeout(scanLoop, 300);
-        }
+        // Stop scanning after successful detection
+        stopScannerHtml5();
     }
 
-    function stopScannerZXing() {
+    function onScanFailure(error) {
+        // Silent ignore - this is called continuously
+    }
+
+    function stopScannerHtml5() {
+        if (html5Scanner) {
+            try {
+                html5Scanner.stop().then(() => {
+                    html5Scanner.clear();
+                    html5Scanner = null;
+                }).catch(() => {});
+            } catch (e) {}
+        }
+
         isScanning = false;
-        scanLoopRunning = false;
-
-        if (scannerReader) {
-            scannerReader = null;
-        }
-
-        if (scannerStream) {
-            scannerStream.getTracks().forEach(track => track.stop());
-            scannerStream = null;
-        }
-
-        const video = document.getElementById('scanner-video');
-        if (video) {
-            video.srcObject = null;
-        }
 
         const status = document.getElementById('scanStatusBadge');
         status.className = 'status-badge waiting';
@@ -2776,11 +2723,10 @@
         if (tab === 'scan') {
             setTimeout(() => {
                 renderScanHistory();
-                // Tidak auto start, user harus klik tombol
             }, 500);
         } else {
             if (isScanning) {
-                stopScannerZXing();
+                stopScannerHtml5();
             }
         }
     }
@@ -2822,7 +2768,7 @@
     // Cleanup scanner on page unload
     window.addEventListener('beforeunload', function() {
         if (isScanning) {
-            stopScannerZXing();
+            stopScannerHtml5();
         }
     });
 
@@ -2830,7 +2776,7 @@
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
             if (isScanning) {
-                stopScannerZXing();
+                stopScannerHtml5();
             }
         }
     });
@@ -2859,8 +2805,8 @@
     window.clearSelection = clearSelection;
     window.bulkClassChange = bulkClassChange;
     window.updateClass = updateClass;
-    window.startScannerZXing = startScannerZXing;
-    window.stopScannerZXing = stopScannerZXing;
+    window.startScannerHtml5 = startScannerHtml5;
+    window.stopScannerHtml5 = stopScannerHtml5;
     window.manualCheck = manualCheck;
     window.processAttendance = processAttendance;
     window.showSuccessPopup = showSuccessPopup;
