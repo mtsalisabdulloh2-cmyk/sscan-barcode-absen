@@ -157,15 +157,6 @@
             background: #e3eff8;
         }
 
-        .btn-purple {
-            background: #6c3b8a;
-            color: white;
-        }
-        .btn-purple:hover {
-            background: #5a2f74;
-            transform: translateY(-2px);
-        }
-
         .btn-sm {
             padding: 0.3rem 1rem;
             font-size: 0.8rem;
@@ -279,17 +270,90 @@
         }
 
         /* ============================================================
-           FORM
+           FILTER BAR
            ============================================================ */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #f8fcff;
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
+            border: 1px solid #e0ecf5;
+            margin-bottom: 1rem;
+        }
+
+        .filter-bar label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1f4a61;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .filter-bar select {
+            padding: 0.4rem 1rem;
+            border-radius: 12px;
+            border: 2px solid #dce8f0;
+            background: white;
+            font-size: 0.85rem;
+            outline: none;
+            min-width: 150px;
+        }
+
+        .filter-bar select:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.12);
+        }
+
+        .filter-bar .filter-count {
+            font-size: 0.8rem;
+            color: #64879e;
+            padding: 0.2rem 0.8rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e0ecf5;
+        }
+
+        .filter-bar .filter-count span {
+            font-weight: 700;
+            color: #2a7f9e;
+        }
+
+        /* ============================================================
+           FORM STYLES
+           ============================================================ */
+        .form-section {
+            background: #f8fcff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e0ecf5;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1f4a61;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0ecf5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section-title i {
+            color: #2a7f9e;
+            font-size: 0.9rem;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem 1.5rem;
-            background: #f8fcff;
-            padding: 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 1rem;
-            border: 1px solid #e0ecf5;
+            gap: 1rem;
         }
 
         .form-group {
@@ -303,11 +367,22 @@
             font-weight: 600;
             color: #1f4a61;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         .form-group label .required {
-            color: #c84e4e;
+            color: #c62828;
+            font-weight: 700;
+        }
+
+        .form-group label .optional {
+            color: #64879e;
+            font-weight: 400;
+            font-size: 0.6rem;
+            text-transform: lowercase;
         }
 
         .form-group input,
@@ -321,13 +396,19 @@
             background: white;
             outline: none;
             width: 100%;
+            transition: all 0.3s ease;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             border-color: #2a7f9e;
-            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.12);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
         }
 
         .form-group .input-wrapper {
@@ -336,20 +417,39 @@
             align-items: center;
         }
 
+        .form-group .input-wrapper input {
+            flex: 1;
+        }
+
         .form-group .input-wrapper button {
-            white-space: nowrap;
             padding: 0.6rem 1rem;
-            background: #e3eff8;
-            border: 2px solid #b6cfdf;
+            border: 2px solid #dce8f0;
             border-radius: 12px;
+            background: white;
             cursor: pointer;
-            font-weight: 600;
-            color: #1b4c64;
             transition: 0.2s;
+            font-size: 0.85rem;
+            color: #1f4a61;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .form-group .input-wrapper button:hover {
+            background: #e3eff8;
+            border-color: #2a7f9e;
         }
 
         .form-group .file-preview {
             margin-top: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #f0f7fc;
+            border-radius: 10px;
+            border: 1px dashed #b6cfdf;
         }
 
         .form-group .file-preview img {
@@ -357,14 +457,35 @@
             height: 50px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #b6cfdf;
+            border: 2px solid #dce8f0;
+        }
+
+        .form-group .file-preview span {
+            font-size: 0.8rem;
+            color: #1f4a61;
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.4rem;
+            background: #f8fcff;
         }
 
         .form-actions {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-top: 0.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e0ecf5;
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: #64879e;
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
         }
 
         /* ============================================================
@@ -477,6 +598,11 @@
             border: 1px solid #ef9a9a;
         }
 
+        .upload-excel-section .upload-result.warning {
+            background: #fff3e0;
+            border: 1px solid #ffcc80;
+        }
+
         .upload-excel-section .upload-result .result-title {
             font-weight: 600;
             font-size: 0.95rem;
@@ -490,16 +616,17 @@
 
         .upload-excel-section .upload-result .result-list {
             margin-top: 0.5rem;
-            max-height: 150px;
+            max-height: 300px;
             overflow-y: auto;
             font-size: 0.8rem;
         }
 
         .upload-excel-section .upload-result .result-list .list-item {
-            padding: 0.2rem 0;
+            padding: 0.3rem 0;
             border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .upload-excel-section .upload-result .result-list .list-item .status-icon {
@@ -512,6 +639,19 @@
 
         .upload-excel-section .upload-result .result-list .list-item .status-icon.error {
             color: #c62828;
+        }
+
+        .upload-excel-section .upload-result .result-list .list-item .status-icon.warning {
+            color: #e65100;
+        }
+
+        .upload-excel-section .upload-result .result-list .list-item .duplicate-badge {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
         }
 
         /* ============================================================
@@ -1037,7 +1177,7 @@
 
         .export-section .export-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             align-items: end;
         }
@@ -1130,6 +1270,181 @@
 
         .export-preview table .total-row td {
             border-top: 2px solid #2a7f9e;
+        }
+
+        /* ============================================================
+           REKAP KELAS AKTIF
+           ============================================================ */
+        .kelas-aktif-section {
+            background: #f8fcff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e0ecf5;
+            margin-bottom: 1rem;
+        }
+
+        .kelas-aktif-section .filter-kelas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .kelas-aktif-section .filter-kelas select {
+            padding: 0.6rem 1rem;
+            border: 2px solid #dce8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: white;
+            outline: none;
+            min-width: 200px;
+        }
+
+        .kelas-aktif-section .filter-kelas select:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+        }
+
+        .kelas-aktif-section .filter-kelas .kelas-info {
+            font-size: 0.85rem;
+            color: #64879e;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .kelas-aktif-section .filter-kelas .kelas-info .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .kelas-aktif-section .filter-kelas .kelas-info .info-item .dot-hadir {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+        }
+
+        .kelas-aktif-section .filter-kelas .kelas-info .info-item .dot-tidak {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #f87171;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper {
+            overflow: auto;
+            max-height: 500px;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table {
+            font-size: 0.85rem;
+            min-width: 800px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table th {
+            position: sticky;
+            top: 0;
+            background: #1f5a77;
+            color: white;
+            padding: 0.6rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table td {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #e8f0f6;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table tr:hover td {
+            background: #f0f7fc;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .status-hadir {
+            color: #2e7d32;
+            font-weight: 700;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .status-tidak {
+            color: #c62828;
+            font-weight: 700;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .status-terlambat {
+            color: #e65100;
+            font-weight: 700;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .status-izin {
+            color: #0d47a1;
+            font-weight: 700;
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .row-hadir {
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .row-tidak {
+            background: rgba(248, 113, 113, 0.05);
+        }
+
+        .kelas-aktif-section .kelas-table-wrapper table .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #64879e;
+        }
+
+        .kelas-aktif-section .kelas-stat {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            border: 1px solid #e0ecf5;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: #64879e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card.hadir .stat-number {
+            color: #2e7d32;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card.tidak .stat-number {
+            color: #c62828;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card.total .stat-number {
+            color: #2a7f9e;
+        }
+
+        .kelas-aktif-section .kelas-stat .stat-card.persen .stat-number {
+            color: #6c3b8a;
         }
 
         /* ============================================================
@@ -1420,6 +1735,10 @@
             background: #2b8c6b;
         }
 
+        .toast.warning {
+            background: #e65100;
+        }
+
         @keyframes slideUp {
             from { transform: translate(-50%, 20px); opacity: 0; }
             to { transform: translate(-50%, 0); opacity: 1; }
@@ -1549,6 +1868,7 @@
             .detail-grid { grid-template-columns: 1fr; }
             .card { padding: 1rem; }
             .bulk-bar { flex-direction: column; align-items: stretch; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
             .scanner-wrapper { grid-template-columns: 1fr; }
             .scanner-container { max-width: 100%; }
             .tabs { flex-direction: column; }
@@ -1560,6 +1880,9 @@
             .export-section .export-grid { grid-template-columns: 1fr; }
             .export-preview { max-height: 300px; }
             .upload-excel-section .upload-zone { padding: 1rem; }
+            .kelas-aktif-section .filter-kelas { flex-direction: column; align-items: stretch; }
+            .kelas-aktif-section .kelas-stat { grid-template-columns: repeat(2, 1fr); }
+            .form-section { padding: 1rem; }
         }
     </style>
 </head>
@@ -1575,7 +1898,9 @@
                 <span class="local-badge"><span class="dot"></span> LocalStorage</span>
             </h1>
             <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
-                <i class="fas fa-file-excel" style="color:#217346;"></i> Upload Excel untuk tambah siswa massal
+                <i class="fas fa-database" style="color:#2a7f9e;"></i> 
+                <span id="dataStatus">Data tersimpan di LocalStorage</span>
+                <span style="margin-left:0.5rem; font-size:0.7rem; color:#2b8c6b;" id="lastSaved"></span>
             </div>
         </div>
         <div class="header-right">
@@ -1611,6 +1936,10 @@
         </button>
         <button class="tab-btn" onclick="switchTab('classes')">
             <i class="fas fa-users"></i> Kelas
+        </button>
+        <button class="tab-btn" onclick="switchTab('rekap')">
+            <i class="fas fa-clipboard-list"></i> Rekap Kelas
+            <span class="tab-badge" id="rekapBadge">0</span>
         </button>
         <button class="tab-btn" onclick="switchTab('scan')">
             <i class="fas fa-qrcode"></i> Scan Barcode
@@ -1653,7 +1982,7 @@
             </div>
             <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
                 <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
-                    <span><i class="fas fa-file-excel" style="color:#217346;"></i> <strong>Upload Excel</strong> - Tambah siswa massal</span>
+                    <span><i class="fas fa-file-excel" style="color:#217346;"></i> <strong>Upload Excel</strong> - Deteksi kolom otomatis & cegah duplikat</span>
                     <span><i class="fas fa-clock"></i> Data tersimpan di LocalStorage</span>
                 </div>
             </div>
@@ -1661,9 +1990,29 @@
     </div>
 
     <!-- ============================================================
-         TAB: DATA SISWA
+         TAB: DATA SISWA - DENGAN FILTER KELAS
          ============================================================ -->
     <div class="tab-content" id="tabStudents">
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+            <label>
+                <i class="fas fa-filter"></i> Filter Kelas:
+            </label>
+            <select id="filterKelas" onchange="renderTable()">
+                <option value="semua">📋 Semua Kelas</option>
+            </select>
+            <span class="filter-count">
+                <i class="fas fa-users"></i> 
+                <span id="filterCount">0</span> siswa ditampilkan
+            </span>
+            <button class="btn btn-sm btn-outline" onclick="document.getElementById('filterKelas').value='semua'; renderTable();">
+                <i class="fas fa-times"></i> Reset Filter
+            </button>
+            <span style="margin-left:auto; font-size:0.75rem; color:#64879e;">
+                <i class="fas fa-info-circle"></i> Pilih kelas untuk melihat siswa per-kelas
+            </span>
+        </div>
+
         <div class="bulk-bar">
             <label style="font-weight:600; font-size:0.85rem; color:#1f4a61;">
                 <i class="fas fa-edit"></i> Ubah Kelas:
@@ -1706,87 +2055,267 @@
          ============================================================ -->
     <div class="tab-content" id="tabAdd">
         <div class="card">
-            <div class="card-title"><i class="fas fa-id-card"></i> <span id="formTitle">Tambah Siswa Baru</span></div>
+            <div class="card-title">
+                <i class="fas fa-id-card"></i> 
+                <span id="formTitle">Tambah Siswa Baru</span>
+                <span class="local-badge" style="font-size:0.65rem;">
+                    <span class="dot"></span> Form Data Siswa
+                </span>
+            </div>
+
             <form id="studentForm" onsubmit="return false;">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Kode Unik <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                            <input type="text" id="kodeUnik" placeholder="S-2024-001" required>
-                            <button type="button" onclick="generateKode()"><i class="fas fa-sync-alt"></i> Gen</button>
+                <!-- SECTION 1: Data Wajib -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-asterisk" style="color:#c62828; font-size:0.7rem;"></i> 
+                        Data Wajib
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">
+                            (tanda * wajib diisi)
+                        </span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Kode Unik <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <input type="text" id="kodeUnik" placeholder="S-2024-001" required>
+                                <button type="button" onclick="generateKode()">
+                                    <i class="fas fa-sync-alt"></i> Gen
+                                </button>
+                            </div>
+                            <div class="form-hint">
+                                <i class="fas fa-info-circle"></i> Klik tombol Gen untuk generate otomatis
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Nama Lengkap <span class="required">*</span></label>
-                        <input type="text" id="namaLengkap" placeholder="Nama lengkap" required>
-                    </div>
-                    <div class="form-group">
-                        <label>NISN <span class="required">*</span></label>
-                        <input type="text" id="nisn" placeholder="NISN" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Kelas <span class="required">*</span></label>
-                        <input type="text" id="kelasInput" placeholder="Contoh: VII A" list="kelasList" required>
-                        <datalist id="kelasList"></datalist>
-                    </div>
-                    <div class="form-group">
-                        <label>Username <span class="required">*</span></label>
-                        <input type="text" id="username" placeholder="Username login" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Password <span class="required">*</span></label>
-                        <div class="input-wrapper">
-                            <input type="password" id="password" placeholder="Min 6 karakter" required>
-                            <button type="button" onclick="togglePassword()"><i class="fas fa-eye" id="pwdIcon"></i></button>
+                        <div class="form-group">
+                            <label>Nama Lengkap <span class="required">*</span></label>
+                            <input type="text" id="namaLengkap" placeholder="Masukkan nama lengkap" required>
+                            <div class="form-hint">
+                                <i class="fas fa-arrow-right"></i> Otomatis jadi username
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>NISN <span class="required">*</span></label>
+                            <input type="text" id="nisn" placeholder="Masukkan NISN" required>
+                            <div class="form-hint">
+                                <i class="fas fa-info-circle"></i> Nomor Induk Siswa Nasional
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Kelas <span class="required">*</span></label>
+                            <input type="text" id="kelasInput" placeholder="Contoh: VII A" list="kelasList" required>
+                            <datalist id="kelasList"></datalist>
+                            <div class="form-hint">
+                                <i class="fas fa-users"></i> Ketik untuk buat kelas baru
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Username <span class="required">*</span></label>
+                            <input type="text" id="username" placeholder="Username login" required>
+                            <div class="form-hint">
+                                <i class="fas fa-arrow-right"></i> Bisa diubah manual
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Password <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <input type="password" id="password" placeholder="Min 6 karakter" required>
+                                <button type="button" onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="pwdIcon"></i>
+                                </button>
+                            </div>
+                            <div class="form-hint">
+                                <i class="fas fa-key"></i> Minimal 6 karakter
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div style="margin:0.5rem 0 0.8rem 0; font-weight:600; color:#1f4a61; font-size:0.85rem;">
-                    <i class="fas fa-chevron-down"></i> Data Lengkap (opsional)
-                </div>
-                <div class="form-grid">
-                    <div class="form-group"><label>Tempat Lahir</label><input type="text" id="tempatLahir"></div>
-                    <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="tanggalLahir"></div>
-                    <div class="form-group">
-                        <label>Jenis Kelamin</label>
-                        <select id="jenisKelamin">
-                            <option value="">Pilih</option>
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
+                <!-- SECTION 2: Data Pribadi -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user"></i> 
+                        Data Pribadi
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">(opsional)</span>
                     </div>
-                    <div class="form-group"><label>Anak Ke-</label><input type="text" id="anakKe" placeholder="2 dari 3"></div>
-                    <div class="form-group"><label>Dusun</label><input type="text" id="dusun"></div>
-                    <div class="form-group"><label>Desa/Kelurahan</label><input type="text" id="desa"></div>
-                    <div class="form-group"><label>Kecamatan</label><input type="text" id="kecamatan"></div>
-                    <div class="form-group"><label>Kabupaten/Kota</label><input type="text" id="kabupaten"></div>
-                    <div class="form-group"><label>Provinsi</label><input type="text" id="provinsi"></div>
-                    <div class="form-group"><label>RT/RW</label><input type="text" id="rtRw" placeholder="001/002"></div>
-                    <div class="form-group"><label>No. Telepon</label><input type="text" id="noTelp"></div>
-                    <div class="form-group"><label>Kode Pos</label><input type="text" id="kodePos"></div>
-                    <div class="form-group"><label>Nama Ayah</label><input type="text" id="namaAyah"></div>
-                    <div class="form-group"><label>Nama Ibu</label><input type="text" id="namaIbu"></div>
-                    <div class="form-group"><label>Pekerjaan Ayah</label><input type="text" id="pekerjaanAyah"></div>
-                    <div class="form-group"><label>Pekerjaan Ibu</label><input type="text" id="pekerjaanIbu"></div>
-                    <div class="form-group"><label>Alamat Orang Tua</label><textarea id="alamatOrtu" rows="2"></textarea></div>
-                    <div class="form-group"><label>No. KK</label><input type="text" id="noKK"></div>
-                    <div class="form-group"><label>NIK Siswa</label><input type="text" id="nikSiswa"></div>
-                    <div class="form-group"><label>NIK Ayah</label><input type="text" id="nikAyah"></div>
-                    <div class="form-group"><label>NIK Ibu</label><input type="text" id="nikIbu"></div>
-                    <div class="form-group"><label>Nama Wali</label><input type="text" id="namaWali"></div>
-                    <div class="form-group"><label>Alamat Wali</label><textarea id="alamatWali" rows="2"></textarea></div>
-                    <div class="form-group"><label>Asal Sekolah</label><input type="text" id="asalSekolah"></div>
-                    <div class="form-group"><label>Alamat Sekolah</label><textarea id="alamatSekolah" rows="2"></textarea></div>
-                    <div class="form-group"><label>NSM/NPSN</label><input type="text" id="nsmNpsn"></div>
-                    <div class="form-group"><label>Catatan</label><textarea id="catatan" rows="2"></textarea></div>
-                    <div class="form-group">
-                        <label>Upload Foto</label>
-                        <input type="file" id="uploadFoto" accept="image/*">
-                        <div class="file-preview" id="fotoPreview"></div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tempat Lahir <span class="optional">(opsional)</span></label>
+                            <input type="text" id="tempatLahir" placeholder="Kota tempat lahir">
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Lahir <span class="optional">(opsional)</span></label>
+                            <input type="date" id="tanggalLahir">
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Kelamin <span class="optional">(opsional)</span></label>
+                            <select id="jenisKelamin">
+                                <option value="">Pilih</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Anak Ke- <span class="optional">(opsional)</span></label>
+                            <input type="text" id="anakKe" placeholder="Contoh: 2 dari 3">
+                        </div>
                     </div>
                 </div>
 
+                <!-- SECTION 3: Alamat -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-map-marker-alt"></i> 
+                        Alamat
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">(opsional)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Dusun <span class="optional">(opsional)</span></label>
+                            <input type="text" id="dusun" placeholder="Nama dusun">
+                        </div>
+                        <div class="form-group">
+                            <label>Desa/Kelurahan <span class="optional">(opsional)</span></label>
+                            <input type="text" id="desa" placeholder="Nama desa/kelurahan">
+                        </div>
+                        <div class="form-group">
+                            <label>Kecamatan <span class="optional">(opsional)</span></label>
+                            <input type="text" id="kecamatan" placeholder="Nama kecamatan">
+                        </div>
+                        <div class="form-group">
+                            <label>Kabupaten/Kota <span class="optional">(opsional)</span></label>
+                            <input type="text" id="kabupaten" placeholder="Nama kabupaten/kota">
+                        </div>
+                        <div class="form-group">
+                            <label>Provinsi <span class="optional">(opsional)</span></label>
+                            <input type="text" id="provinsi" placeholder="Nama provinsi">
+                        </div>
+                        <div class="form-group">
+                            <label>RT/RW <span class="optional">(opsional)</span></label>
+                            <input type="text" id="rtRw" placeholder="Contoh: 001/002">
+                        </div>
+                        <div class="form-group">
+                            <label>No. Telepon <span class="optional">(opsional)</span></label>
+                            <input type="text" id="noTelp" placeholder="Nomor telepon">
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Pos <span class="optional">(opsional)</span></label>
+                            <input type="text" id="kodePos" placeholder="Kode pos">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: Orang Tua -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-family"></i> 
+                        Data Orang Tua
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">(opsional)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nama Ayah <span class="optional">(opsional)</span></label>
+                            <input type="text" id="namaAyah" placeholder="Nama ayah">
+                        </div>
+                        <div class="form-group">
+                            <label>Nama Ibu <span class="optional">(opsional)</span></label>
+                            <input type="text" id="namaIbu" placeholder="Nama ibu">
+                        </div>
+                        <div class="form-group">
+                            <label>Pekerjaan Ayah <span class="optional">(opsional)</span></label>
+                            <input type="text" id="pekerjaanAyah" placeholder="Pekerjaan ayah">
+                        </div>
+                        <div class="form-group">
+                            <label>Pekerjaan Ibu <span class="optional">(opsional)</span></label>
+                            <input type="text" id="pekerjaanIbu" placeholder="Pekerjaan ibu">
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Orang Tua <span class="optional">(opsional)</span></label>
+                            <textarea id="alamatOrtu" rows="2" placeholder="Alamat lengkap orang tua"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>No. KK <span class="optional">(opsional)</span></label>
+                            <input type="text" id="noKK" placeholder="Nomor Kartu Keluarga">
+                        </div>
+                        <div class="form-group">
+                            <label>NIK Siswa <span class="optional">(opsional)</span></label>
+                            <input type="text" id="nikSiswa" placeholder="NIK siswa">
+                        </div>
+                        <div class="form-group">
+                            <label>NIK Ayah <span class="optional">(opsional)</span></label>
+                            <input type="text" id="nikAyah" placeholder="NIK ayah">
+                        </div>
+                        <div class="form-group">
+                            <label>NIK Ibu <span class="optional">(opsional)</span></label>
+                            <input type="text" id="nikIbu" placeholder="NIK ibu">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: Wali -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-handshake"></i> 
+                        Data Wali
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">(opsional)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nama Wali <span class="optional">(opsional)</span></label>
+                            <input type="text" id="namaWali" placeholder="Nama wali">
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Wali <span class="optional">(opsional)</span></label>
+                            <textarea id="alamatWali" rows="2" placeholder="Alamat lengkap wali"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 6: Pendidikan -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-school"></i> 
+                        Data Pendidikan
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">(opsional)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Asal Sekolah <span class="optional">(opsional)</span></label>
+                            <input type="text" id="asalSekolah" placeholder="Nama sekolah asal">
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Sekolah <span class="optional">(opsional)</span></label>
+                            <textarea id="alamatSekolah" rows="2" placeholder="Alamat sekolah"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>NSM/NPSN <span class="optional">(opsional)</span></label>
+                            <input type="text" id="nsmNpsn" placeholder="NSM atau NPSN sekolah">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 7: Foto & Catatan -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-camera"></i> 
+                        Foto & Catatan
+                        <span style="font-size:0.6rem; color:#64879e; font-weight:400; margin-left:0.5rem;">(opsional)</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Upload Foto <span class="optional">(opsional)</span></label>
+                            <input type="file" id="uploadFoto" accept="image/*">
+                            <div class="file-preview" id="fotoPreview">
+                                <span style="color:#64879e; font-size:0.8rem;">Belum ada foto</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan <span class="optional">(opsional)</span></label>
+                            <textarea id="catatan" rows="3" placeholder="Catatan tambahan tentang siswa"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM ACTIONS -->
                 <div class="form-actions">
                     <button type="button" class="btn btn-primary" onclick="saveStudent()">
                         <i class="fas fa-save"></i> <span id="saveBtnText">Tambah Siswa</span>
@@ -1794,13 +2323,16 @@
                     <button type="button" class="btn btn-outline" onclick="clearForm()">
                         <i class="fas fa-undo"></i> Reset
                     </button>
+                    <button type="button" class="btn btn-outline" onclick="switchTab('students')" style="margin-left:auto;">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- ============================================================
-         TAB: UPLOAD EXCEL
+         TAB: UPLOAD EXCEL - DENGAN DETEKSI DUPLIKAT
          ============================================================ -->
     <div class="tab-content" id="tabUpload">
         <div class="card">
@@ -1809,29 +2341,39 @@
                 <span class="local-badge" style="font-size:0.65rem;">
                     <span class="dot"></span> Massal
                 </span>
+                <span style="font-size:0.55rem; background:#e8f5e9; color:#2e7d32; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
+                    <i class="fas fa-check-circle"></i> Auto Detect Kolom
+                </span>
+                <span style="font-size:0.55rem; background:#fff3e0; color:#e65100; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
+                    <i class="fas fa-shield-alt"></i> Cegah Duplikat
+                </span>
             </div>
 
             <div class="upload-excel-section">
                 <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <div class="upload-text">Klik atau drag & drop file Excel</div>
+                    <div class="upload-text">📂 Klik atau drag & drop file Excel</div>
                     <div class="upload-sub">Support format .xlsx, .xls, .csv</div>
-                    <span class="upload-format"><i class="fas fa-info-circle"></i> Format: No | Nama | NISN | Kelas | Username | Password</span>
+                    <span class="upload-format"><i class="fas fa-info-circle"></i> Kolom: <strong>Nama</strong> | <strong>NISN</strong> | <strong>Kelas</strong> | <strong>Username</strong> | <strong>Password</strong></span>
                 </div>
                 <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleFileUpload(event)">
 
                 <div class="upload-info">
                     <div class="info-item">
                         <i class="fas fa-check-circle" style="color:#2e7d32;"></i>
-                        <span>Kolom wajib: Nama, NISN, Kelas, Username, Password</span>
+                        <span>Kolom wajib: <strong>Nama, NISN, Kelas, Username, Password</strong></span>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-download" style="color:#2a7f9e;"></i>
-                        <span><a href="#" onclick="downloadTemplate()" style="color:#2a7f9e; text-decoration:none;">Download Template</a></span>
+                        <span><a href="#" onclick="downloadTemplate()" style="color:#2a7f9e; text-decoration:none; font-weight:600;">📥 Download Template</a></span>
                     </div>
                     <div class="info-item">
-                        <i class="fas fa-info-circle" style="color:#d9a13b;"></i>
-                        <span>Data duplikat akan dilewati</span>
+                        <i class="fas fa-shield-alt" style="color:#e65100;"></i>
+                        <span>Deteksi duplikat: <strong>NISN, Username, Kode Unik</strong></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-magic" style="color:#6c3b8a;"></i>
+                        <span>Deteksi kolom <strong>otomatis</strong> - Bisa menggunakan nama kolom apapun</span>
                     </div>
                 </div>
 
@@ -1840,6 +2382,20 @@
                     <div class="result-detail" id="resultDetail">0 siswa berhasil ditambahkan</div>
                     <div class="result-list" id="resultList"></div>
                 </div>
+            </div>
+
+            <div style="background:#e3eff8; border-radius:12px; padding:1rem; margin-top:1rem; border:1px solid #b6cfdf;">
+                <div style="font-weight:600; color:#1f4a61; margin-bottom:0.3rem;">
+                    <i class="fas fa-lightbulb" style="color:#d9a13b;"></i> Panduan Upload Excel
+                </div>
+                <ol style="color:#1f4a61; font-size:0.85rem; padding-left:1.2rem; line-height:1.8;">
+                    <li>Klik <strong>"Download Template"</strong> untuk mendapatkan file contoh</li>
+                    <li>Isi data siswa di file Excel (minimal 1 baris data)</li>
+                    <li><strong>Kolom bisa apa saja</strong> - sistem akan mendeteksi otomatis</li>
+                    <li>Sistem akan <strong>mendeteksi duplikat</strong> berdasarkan NISN, Username, dan Kode Unik</li>
+                    <li>Data duplikat akan <strong>dilewati</strong> dan ditampilkan di laporan</li>
+                    <li>Kode unik akan <strong>otomatis dibuat</strong> jika tidak diisi</li>
+                </ol>
             </div>
         </div>
     </div>
@@ -1858,6 +2414,84 @@
             <div class="class-tags" id="classTags"></div>
             <div style="margin-top:1rem; color:#64879e; font-size:0.85rem;">
                 <i class="fas fa-info-circle"></i> Kelas yang dihapus akan mengosongkan kelas siswa yang bersangkutan.
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: REKAP KELAS
+         ============================================================ -->
+    <div class="tab-content" id="tabRekap">
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-clipboard-list"></i> Rekap Kehadiran per Kelas
+                <span class="local-badge" style="font-size:0.65rem;">
+                    <span class="dot"></span> <span id="rekapTanggal"></span>
+                </span>
+            </div>
+
+            <div class="kelas-aktif-section">
+                <div class="filter-kelas">
+                    <select id="filterKelasRekap" onchange="renderRekapKelas()">
+                        <option value="">-- Pilih Kelas --</option>
+                    </select>
+                    <div class="kelas-info">
+                        <span class="info-item">
+                            <span class="dot-hadir"></span> <span id="infoHadir">0 Hadir</span>
+                        </span>
+                        <span class="info-item">
+                            <span class="dot-tidak"></span> <span id="infoTidak">0 Tidak Hadir</span>
+                        </span>
+                        <span class="info-item">
+                            <i class="fas fa-users" style="color:#2a7f9e;"></i> <span id="infoTotal">0 Total</span>
+                        </span>
+                        <span class="info-item">
+                            <i class="fas fa-percent" style="color:#6c3b8a;"></i> <span id="infoPersen">0%</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="kelas-stat" id="kelasStat">
+                    <div class="stat-card total">
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label">Total Siswa</div>
+                    </div>
+                    <div class="stat-card hadir">
+                        <div class="stat-number" id="statHadir">0</div>
+                        <div class="stat-label">✅ Hadir</div>
+                    </div>
+                    <div class="stat-card tidak">
+                        <div class="stat-number" id="statTidak">0</div>
+                        <div class="stat-label">❌ Tidak Hadir</div>
+                    </div>
+                    <div class="stat-card persen">
+                        <div class="stat-number" id="statPersen">0%</div>
+                        <div class="stat-label">📊 Persentase</div>
+                    </div>
+                </div>
+
+                <div class="kelas-table-wrapper">
+                    <table id="rekapTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>NISN</th>
+                                <th>Kode</th>
+                                <th>Status</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rekapBody">
+                            <tr>
+                                <td colspan="6" class="no-data">
+                                    <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                                    Pilih kelas untuk melihat rekap kehadiran
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -2109,35 +2743,85 @@
     // DATA STORAGE FUNCTIONS
     // ============================================================
     function saveData() {
-        const data = {
-            students: students,
-            attendance: attendance,
-            classes: classList,
-            scanHistory: scanHistory,
-            nextId: nextId,
-            updatedAt: new Date().toISOString()
-        };
-        localStorage.setItem('siswaData_local', JSON.stringify(data));
-        console.log('💾 Data saved to LocalStorage');
+        try {
+            const data = {
+                students: students,
+                attendance: attendance,
+                classes: classList,
+                scanHistory: scanHistory,
+                nextId: nextId,
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem('siswaData_local', JSON.stringify(data));
+            
+            const now = new Date();
+            document.getElementById('lastSaved').textContent = '🔄 Terakhir disimpan: ' + now.toLocaleTimeString('id-ID');
+            document.getElementById('dataStatus').textContent = '✅ Data tersimpan di LocalStorage (' + students.length + ' siswa)';
+            
+            console.log('💾 Data saved to LocalStorage at', now.toLocaleTimeString());
+            return true;
+        } catch (e) {
+            console.error('❌ Gagal menyimpan data:', e);
+            document.getElementById('dataStatus').textContent = '⚠️ Gagal menyimpan data!';
+            return false;
+        }
     }
 
     function loadData() {
-        const stored = localStorage.getItem('siswaData_local');
-        if (stored) {
-            try {
+        try {
+            const stored = localStorage.getItem('siswaData_local');
+            if (stored) {
                 const data = JSON.parse(stored);
-                students = data.students || [];
-                attendance = data.attendance || {};
-                classList = data.classes || getDefaultData().classes;
-                scanHistory = data.scanHistory || [];
-                nextId = data.nextId || students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                
+                if (data.students && Array.isArray(data.students)) {
+                    students = data.students;
+                } else {
+                    students = [];
+                }
+                
+                if (data.attendance && typeof data.attendance === 'object') {
+                    attendance = data.attendance;
+                } else {
+                    attendance = {};
+                }
+                
+                if (data.classes && Array.isArray(data.classes)) {
+                    classList = data.classes;
+                } else {
+                    classList = getDefaultData().classes;
+                }
+                
+                if (data.scanHistory && Array.isArray(data.scanHistory)) {
+                    scanHistory = data.scanHistory;
+                } else {
+                    scanHistory = [];
+                }
+                
+                if (data.nextId && typeof data.nextId === 'number') {
+                    nextId = data.nextId;
+                } else {
+                    nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                    if (nextId < 1) nextId = 1;
+                }
+                
+                document.getElementById('dataStatus').textContent = '✅ Data dimuat dari LocalStorage (' + students.length + ' siswa)';
+                if (data.updatedAt) {
+                    const date = new Date(data.updatedAt);
+                    document.getElementById('lastSaved').textContent = '🔄 Terakhir disimpan: ' + date.toLocaleTimeString('id-ID');
+                }
+                
+                console.log('📂 Data loaded from LocalStorage:', students.length, 'students');
                 return true;
-            } catch (e) {
-                console.error('Load data error:', e);
-                return false;
             }
+        } catch (e) {
+            console.error('❌ Gagal memuat data:', e);
+            document.getElementById('dataStatus').textContent = '⚠️ Gagal memuat data!';
         }
         return false;
+    }
+
+    function autoSave() {
+        saveData();
     }
 
     // ============================================================
@@ -2178,12 +2862,14 @@
                     if (data.classes) classList = data.classes;
                     if (data.scanHistory) scanHistory = data.scanHistory;
                     if (data.nextId) nextId = data.nextId;
-                    saveData();
+                    autoSave();
                     renderAll();
                     updateDashboard();
                     updateScanInfo();
                     renderScanHistory();
                     updateExportDropdowns();
+                    updateRekapDropdowns();
+                    updateFilterDropdown();
                     showToast('✅ Data berhasil diimpor!', 'success');
                 } catch (err) {
                     showToast('❌ Gagal mengimpor data!', 'error');
@@ -2206,21 +2892,30 @@
         scanHistory = [];
         nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
         selectedIds.clear();
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateScanInfo();
         renderScanHistory();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         showToast('🗑️ Semua data telah direset!', 'info');
     }
 
     // ============================================================
-    // UPLOAD EXCEL - TAMBAH SISWA MASSAL
+    // UPLOAD EXCEL - DENGAN DETEKSI DUPLIKAT
     // ============================================================
     function handleFileUpload(event) {
         const file = event.target.files[0];
-        if (!file) return;
+        if (!file) {
+            showToast('⚠️ Pilih file terlebih dahulu!', 'error');
+            return;
+        }
+
+        document.getElementById('uploadResult').className = 'upload-result';
+
+        showToast('📤 Memproses file ' + file.name + '...', 'info');
 
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -2230,126 +2925,160 @@
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
+                console.log('📊 Data dari Excel:', jsonData);
+                console.log('📋 Jumlah baris:', jsonData.length);
+
                 if (jsonData.length === 0) {
-                    showUploadResult('error', '⚠️ File kosong!', 'Tidak ada data yang ditemukan.');
+                    showUploadResult('error', '⚠️ File kosong!', 'Tidak ada data yang ditemukan di file Excel.');
                     return;
                 }
 
-                // Proses upload
-                processUploadData(jsonData);
+                const headers = Object.keys(jsonData[0]);
+                console.log('📋 Kolom yang ditemukan:', headers);
+
+                processUploadDataWithDuplicateCheck(jsonData, headers);
             } catch (err) {
-                showUploadResult('error', '❌ Gagal membaca file!', err.message);
+                console.error('Error membaca file:', err);
+                showUploadResult('error', '❌ Gagal membaca file!', 'Error: ' + err.message);
             }
+        };
+        reader.onerror = function() {
+            showUploadResult('error', '❌ Gagal membaca file!', 'Terjadi kesalahan saat membaca file.');
         };
         reader.readAsArrayBuffer(file);
         
-        // Reset input
         event.target.value = '';
     }
 
-    function processUploadData(data) {
+    function processUploadDataWithDuplicateCheck(data, headers) {
         let berhasil = 0;
         let gagal = 0;
+        let duplikat = 0;
         let details = [];
 
-        // Detect column names (case insensitive)
-        const headers = Object.keys(data[0]).map(h => h.toLowerCase().trim());
+        const headersLower = headers.map(h => h.toLowerCase().trim());
 
-        // Map columns
-        const colMap = {
-            nama: headers.find(h => h.includes('nama') || h.includes('name')),
-            nisn: headers.find(h => h.includes('nisn') || h.includes('nis')),
-            kelas: headers.find(h => h.includes('kelas') || h.includes('class')),
-            username: headers.find(h => h.includes('username') || h.includes('user')),
-            password: headers.find(h => h.includes('password') || h.includes('pass')),
-            kode: headers.find(h => h.includes('kode') || h.includes('code')),
-            tempatLahir: headers.find(h => h.includes('tempat') && h.includes('lahir')),
-            tanggalLahir: headers.find(h => h.includes('tanggal') && h.includes('lahir')),
-            jenisKelamin: headers.find(h => h.includes('jenis') && h.includes('kelamin')),
-            alamat: headers.find(h => h.includes('alamat')),
-            noTelp: headers.find(h => h.includes('telp') || h.includes('telepon') || h.includes('phone')),
-            email: headers.find(h => h.includes('email'))
-        };
+        function findColumn(keywords) {
+            for (let keyword of keywords) {
+                const found = headersLower.findIndex(h => h.includes(keyword));
+                if (found !== -1) {
+                    return headers[found];
+                }
+            }
+            return null;
+        }
 
-        // Validasi kolom wajib
-        if (!colMap.nama || !colMap.nisn || !colMap.kelas || !colMap.username || !colMap.password) {
-            showUploadResult('error', '⚠️ Format file tidak sesuai!', 
-                'Kolom wajib: Nama, NISN, Kelas, Username, Password. ' +
-                'Kolom yang ditemukan: ' + headers.join(', '));
+        const colNama = findColumn(['nama', 'name', 'siswa', 'student']);
+        const colNisn = findColumn(['nisn', 'nis']);
+        const colKelas = findColumn(['kelas', 'class', 'rombel']);
+        const colUsername = findColumn(['username', 'user', 'login']);
+        const colPassword = findColumn(['password', 'pass', 'sandi']);
+        const colKode = findColumn(['kode', 'code', 'unik']);
+
+        console.log('🗺️ Mapping kolom:', { colNama, colNisn, colKelas, colUsername, colPassword, colKode });
+
+        const foundColumns = [colNama, colNisn, colKelas, colUsername, colPassword].filter(c => c);
+        
+        if (foundColumns.length < 5) {
+            showUploadResult('error', '⚠️ Kolom tidak lengkap!', 
+                'Kolom wajib: <strong>Nama, NISN, Kelas, Username, Password</strong><br>' +
+                'Kolom yang ditemukan: ' + headers.join(', ') + '<br>' +
+                'Pastikan ada kolom dengan kata: Nama, NISN, Kelas, Username, Password');
             return;
         }
 
-        data.forEach((row, index) => {
-            const rowNum = index + 2; // +2 karena header di baris 1 dan index dimulai 0
-            
-            const nama = String(row[colMap.nama] || '').trim();
-            const nisn = String(row[colMap.nisn] || '').trim();
-            const kelas = String(row[colMap.kelas] || '').trim();
-            const username = String(row[colMap.username] || '').trim();
-            const password = String(row[colMap.password] || '').trim();
-            const kode = colMap.kode ? String(row[colMap.kode] || '').trim() : '';
-            const tempatLahir = colMap.tempatLahir ? String(row[colMap.tempatLahir] || '').trim() : '';
-            const tanggalLahir = colMap.tanggalLahir ? String(row[colMap.tanggalLahir] || '').trim() : '';
-            const jenisKelamin = colMap.jenisKelamin ? String(row[colMap.jenisKelamin] || '').trim() : '';
-            const alamat = colMap.alamat ? String(row[colMap.alamat] || '').trim() : '';
-            const noTelp = colMap.noTelp ? String(row[colMap.noTelp] || '').trim() : '';
-            const email = colMap.email ? String(row[colMap.email] || '').trim() : '';
+        // Kumpulkan semua NISN, Username, Kode Unik yang sudah ada untuk deteksi duplikat
+        const existingNisn = new Set(students.map(s => s.nisn));
+        const existingUsername = new Set(students.map(s => s.username));
+        const existingKode = new Set(students.map(s => s.kodeUnik));
 
-            // Validasi wajib
+        // Untuk tracking duplikat dalam file yang sama
+        const fileNisn = new Set();
+        const fileUsername = new Set();
+        const fileKode = new Set();
+
+        data.forEach((row, index) => {
+            const rowNum = index + 2;
+            
+            const nama = String(row[colNama] || '').trim();
+            const nisn = String(row[colNisn] || '').trim();
+            const kelas = String(row[colKelas] || '').trim();
+            const username = String(row[colUsername] || '').trim();
+            const password = String(row[colPassword] || '').trim();
+            const kode = colKode ? String(row[colKode] || '').trim() : '';
+
+            // Validasi data kosong
             if (!nama) {
                 gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'Nama kosong' });
+                details.push({ row: rowNum, status: 'error', message: '❌ Nama kosong' });
                 return;
             }
             if (!nisn) {
                 gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'NISN kosong' });
+                details.push({ row: rowNum, status: 'error', message: '❌ NISN kosong' });
                 return;
             }
             if (!kelas) {
                 gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'Kelas kosong' });
+                details.push({ row: rowNum, status: 'error', message: '❌ Kelas kosong' });
                 return;
             }
             if (!username) {
                 gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'Username kosong' });
+                details.push({ row: rowNum, status: 'error', message: '❌ Username kosong' });
                 return;
             }
             if (!password || password.length < 6) {
                 gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'Password minimal 6 karakter' });
+                details.push({ row: rowNum, status: 'error', message: '❌ Password minimal 6 karakter' });
                 return;
             }
 
-            // Cek duplikat
-            const dupKode = students.some(s => s.kodeUnik === kode && kode !== '');
-            const dupNisn = students.some(s => s.nisn === nisn);
-            const dupUser = students.some(s => s.username === username);
+            // CEK DUPLIKAT DENGAN DATA YANG SUDAH ADA
+            let isDuplicate = false;
+            let duplicateReason = '';
 
-            if (dupKode) {
-                gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'Kode unik duplikat: ' + kode });
-                return;
-            }
-            if (dupNisn) {
-                gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'NISN duplikat: ' + nisn });
-                return;
-            }
-            if (dupUser) {
-                gagal++;
-                details.push({ row: rowNum, status: 'error', message: 'Username duplikat: ' + username });
+            // Cek duplikat NISN
+            if (existingNisn.has(nisn) || fileNisn.has(nisn)) {
+                isDuplicate = true;
+                duplicateReason = `NISN "${nisn}" sudah terdaftar`;
+                duplikat++;
+                details.push({ row: rowNum, status: 'warning', message: `⚠️ DUPLIKAT: ${duplicateReason}` });
                 return;
             }
 
-            // Tambah kelas ke daftar jika belum ada
+            // Cek duplikat Username
+            if (existingUsername.has(username) || fileUsername.has(username)) {
+                isDuplicate = true;
+                duplicateReason = `Username "${username}" sudah terdaftar`;
+                duplikat++;
+                details.push({ row: rowNum, status: 'warning', message: `⚠️ DUPLIKAT: ${duplicateReason}` });
+                return;
+            }
+
+            // Cek duplikat Kode Unik (jika diisi)
+            if (kode) {
+                if (existingKode.has(kode) || fileKode.has(kode)) {
+                    isDuplicate = true;
+                    duplicateReason = `Kode "${kode}" sudah terdaftar`;
+                    duplikat++;
+                    details.push({ row: rowNum, status: 'warning', message: `⚠️ DUPLIKAT: ${duplicateReason}` });
+                    return;
+                }
+            }
+
+            // Tambahkan ke tracking file
+            fileNisn.add(nisn);
+            fileUsername.add(username);
+            if (kode) fileKode.add(kode);
+
+            // Tambah kelas baru
             if (kelas && !classList.includes(kelas)) {
                 classList.push(kelas);
                 classList.sort();
             }
 
-            // Generate kode otomatis jika tidak diisi
+            // Generate kode otomatis
             let finalKode = kode;
             if (!finalKode) {
                 const year = new Date().getFullYear();
@@ -2359,11 +3088,17 @@
                     const match = code?.match(/S-\d{4}-(\d{3})/);
                     if (match) maxNum = Math.max(maxNum, parseInt(match[1]));
                 });
-                const nextNum = String(maxNum + 1).padStart(3, '0');
+                // Juga cek fileKode
+                let maxFileNum = 0;
+                fileKode.forEach(code => {
+                    const match = code?.match(/S-\d{4}-(\d{3})/);
+                    if (match) maxFileNum = Math.max(maxFileNum, parseInt(match[1]));
+                });
+                const nextNum = String(Math.max(maxNum, maxFileNum) + 1).padStart(3, '0');
                 finalKode = `S-${year}-${nextNum}`;
+                fileKode.add(finalKode);
             }
 
-            // Buat objek siswa
             const newStudent = {
                 id: nextId++,
                 kodeUnik: finalKode,
@@ -2372,9 +3107,9 @@
                 username: username,
                 password: password,
                 kelas: kelas,
-                tempatLahir: tempatLahir,
-                tanggalLahir: tanggalLahir,
-                jenisKelamin: jenisKelamin,
+                tempatLahir: '',
+                tanggalLahir: '',
+                jenisKelamin: '',
                 anakKe: '',
                 dusun: '',
                 desa: '',
@@ -2382,13 +3117,13 @@
                 kabupaten: '',
                 provinsi: '',
                 rtRw: '',
-                noTelp: noTelp,
+                noTelp: '',
                 kodePos: '',
                 namaAyah: '',
                 namaIbu: '',
                 pekerjaanAyah: '',
                 pekerjaanIbu: '',
-                alamatOrtu: alamat,
+                alamatOrtu: '',
                 noKK: '',
                 nikSiswa: '',
                 nikAyah: '',
@@ -2400,28 +3135,47 @@
                 nsmNpsn: '',
                 catatan: '',
                 foto: '',
-                email: email
+                email: ''
             };
 
             students.push(newStudent);
+            existingNisn.add(nisn);
+            existingUsername.add(username);
+            existingKode.add(finalKode);
             berhasil++;
-            details.push({ row: rowNum, status: 'success', message: `${nama} - ${finalKode}` });
+            details.push({ row: rowNum, status: 'success', message: `✅ ${nama} - ${finalKode}` });
         });
 
-        // Simpan data
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateScanInfo();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
 
-        // Tampilkan hasil
-        const message = `${berhasil} siswa berhasil ditambahkan${gagal > 0 ? `, ${gagal} gagal` : ''}`;
-        showUploadResult(berhasil > 0 ? 'success' : 'error', 
-            berhasil > 0 ? '✅ Upload Berhasil' : '❌ Upload Gagal',
-            message,
-            details
-        );
+        let message = `${berhasil} siswa berhasil ditambahkan`;
+        if (duplikat > 0) message += `, ${duplikat} duplikat dilewati`;
+        if (gagal > 0) message += `, ${gagal} gagal`;
+        
+        let title = berhasil > 0 ? '✅ Upload Berhasil' : '❌ Upload Gagal';
+        let type = berhasil > 0 ? 'success' : 'error';
+        if (berhasil > 0 && duplikat > 0) {
+            title = '✅ Upload Berhasil dengan Duplikat';
+            type = 'warning';
+        }
+        
+        showUploadResult(type, title, message, details);
+        
+        if (berhasil > 0) {
+            showToast(`✅ ${berhasil} siswa berhasil ditambahkan!`, 'success');
+        }
+        if (duplikat > 0) {
+            showToast(`⚠️ ${duplikat} data duplikat dilewati`, 'warning');
+        }
+        if (gagal > 0) {
+            showToast(`❌ ${gagal} siswa gagal ditambahkan`, 'error');
+        }
     }
 
     function showUploadResult(type, title, detail, details = []) {
@@ -2432,16 +3186,25 @@
 
         resultDiv.className = 'upload-result show ' + type;
         titleEl.textContent = title;
-        detailEl.textContent = detail;
+        detailEl.innerHTML = detail;
 
         if (details.length > 0) {
             let listHtml = '';
+            const successCount = details.filter(d => d.status === 'success').length;
+            const warningCount = details.filter(d => d.status === 'warning').length;
+            const errorCount = details.filter(d => d.status === 'error').length;
+            
+            listHtml += `<div style="padding:0.3rem 0; font-weight:600; border-bottom:2px solid #ddd; margin-bottom:0.3rem;">
+                ✅ Berhasil: ${successCount} | ⚠️ Duplikat: ${warningCount} | ❌ Gagal: ${errorCount}
+            </div>`;
+            
             details.forEach(d => {
-                const icon = d.status === 'success' ? '✅' : '❌';
-                const color = d.status === 'success' ? 'success' : 'error';
+                let icon = d.status === 'success' ? '✅' : d.status === 'warning' ? '⚠️' : '❌';
+                let color = d.status === 'success' ? 'success' : d.status === 'warning' ? 'warning' : 'error';
+                let extra = d.status === 'warning' ? ' <span class="duplicate-badge">DUPLIKAT</span>' : '';
                 listHtml += `
                     <div class="list-item">
-                        <span><span class="status-icon ${color}">${icon}</span> Baris ${d.row}: ${d.message}</span>
+                        <span><span class="status-icon ${color}">${icon}</span> Baris ${d.row}: ${d.message}${extra}</span>
                     </div>
                 `;
             });
@@ -2451,19 +3214,19 @@
             listEl.style.display = 'none';
         }
 
-        // Scroll ke hasil
         resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function downloadTemplate() {
         const templateData = [
-            ['No', 'Nama', 'NISN', 'Kelas', 'Username', 'Password', 'Kode Unik', 'Tempat Lahir', 'Tanggal Lahir', 'Jenis Kelamin', 'Alamat', 'No Telepon', 'Email'],
-            ['1', 'Contoh Siswa', '1234567890', 'VII A', 'contoh.siswa', 'contoh123', 'S-2024-001', 'Jakarta', '2010-01-01', 'Laki-laki', 'Jl. Contoh No. 1', '081234567890', 'contoh@email.com']
+            ['Nama', 'NISN', 'Kelas', 'Username', 'Password'],
+            ['Contoh Siswa', '1234567890', 'VII A', 'contoh.siswa', 'contoh123'],
+            ['Contoh Kedua', '1234567891', 'VII B', 'contoh.dua', 'contoh123']
         ];
 
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(templateData);
-        ws['!cols'] = [{ wch: 5 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 18 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 25 }];
+        ws['!cols'] = [{ wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 15 }];
         XLSX.utils.book_append_sheet(wb, ws, 'Template');
         
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -2477,7 +3240,6 @@
         showToast('📥 Template berhasil didownload!', 'success');
     }
 
-    // Drag and drop support
     document.addEventListener('DOMContentLoaded', function() {
         const zone = document.getElementById('uploadZone');
         if (zone) {
@@ -2501,6 +3263,144 @@
             });
         }
     });
+
+    // ============================================================
+    // FILTER KELAS - UPDATE DROPDOWN
+    // ============================================================
+    function updateFilterDropdown() {
+        const select = document.getElementById('filterKelas');
+        const current = select.value;
+        select.innerHTML = '<option value="semua">📋 Semua Kelas</option>';
+        classList.forEach(c => {
+            select.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+        if (current && classList.includes(current)) {
+            select.value = current;
+        }
+        renderTable();
+    }
+
+    // ============================================================
+    // REKAP KELAS
+    // ============================================================
+    function updateRekapDropdowns() {
+        const select = document.getElementById('filterKelasRekap');
+        const current = select.value;
+        select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        classList.forEach(c => {
+            select.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+        if (current && classList.includes(current)) {
+            select.value = current;
+        }
+        renderRekapKelas();
+    }
+
+    function renderRekapKelas() {
+        const kelas = document.getElementById('filterKelasRekap').value;
+        const tbody = document.getElementById('rekapBody');
+        const today = new Date().toISOString().split('T')[0];
+        
+        document.getElementById('rekapTanggal').textContent = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        if (!kelas) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="no-data">
+                        <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                        Pilih kelas untuk melihat rekap kehadiran
+                    </td>
+                </tr>
+            `;
+            document.getElementById('statTotal').textContent = '0';
+            document.getElementById('statHadir').textContent = '0';
+            document.getElementById('statTidak').textContent = '0';
+            document.getElementById('statPersen').textContent = '0%';
+            document.getElementById('infoHadir').textContent = '0 Hadir';
+            document.getElementById('infoTidak').textContent = '0 Tidak Hadir';
+            document.getElementById('infoTotal').textContent = '0 Total';
+            document.getElementById('infoPersen').textContent = '0%';
+            document.getElementById('rekapBadge').textContent = '0';
+            return;
+        }
+
+        const siswaKelas = students.filter(s => s.kelas === kelas);
+        
+        if (siswaKelas.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="no-data">
+                        <i class="fas fa-users" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                        Tidak ada siswa di kelas ini
+                    </td>
+                </tr>
+            `;
+            document.getElementById('statTotal').textContent = '0';
+            document.getElementById('statHadir').textContent = '0';
+            document.getElementById('statTidak').textContent = '0';
+            document.getElementById('statPersen').textContent = '0%';
+            document.getElementById('infoHadir').textContent = '0 Hadir';
+            document.getElementById('infoTidak').textContent = '0 Tidak Hadir';
+            document.getElementById('infoTotal').textContent = '0 Total';
+            document.getElementById('infoPersen').textContent = '0%';
+            document.getElementById('rekapBadge').textContent = '0';
+            return;
+        }
+
+        let hadir = 0;
+        let tidakHadir = 0;
+        let html = '';
+
+        siswaKelas.forEach((student, index) => {
+            const status = attendance[today]?.[student.id] || null;
+            const isHadir = status === 'Hadir';
+            const isTidak = !status || status === 'Tidak Hadir';
+            
+            if (isHadir) hadir++;
+            if (isTidak) tidakHadir++;
+
+            const statusText = status || 'Tidak Hadir';
+            const statusClass = status === 'Hadir' ? 'status-hadir' :
+                               status === 'Tidak Hadir' ? 'status-tidak' :
+                               status === 'Terlambat' ? 'status-terlambat' :
+                               status === 'Izin' ? 'status-izin' : 'status-tidak';
+            
+            const rowClass = isHadir ? 'row-hadir' : 'row-tidak';
+            const icon = isHadir ? '✅' : '❌';
+
+            html += `
+                <tr class="${rowClass}">
+                    <td>${index + 1}</td>
+                    <td><strong>${student.namaLengkap}</strong></td>
+                    <td>${student.nisn}</td>
+                    <td><span class="student-code">${student.kodeUnik}</span></td>
+                    <td><span class="${statusClass}">${icon} ${statusText}</span></td>
+                    <td>${isHadir ? 'Hadir tepat waktu' : (status === 'Terlambat' ? 'Terlambat' : status === 'Izin' ? 'Izin' : 'Tidak hadir tanpa keterangan')}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+
+        const total = siswaKelas.length;
+        const persen = total > 0 ? Math.round((hadir / total) * 100) : 0;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statHadir').textContent = hadir;
+        document.getElementById('statTidak').textContent = tidakHadir;
+        document.getElementById('statPersen').textContent = persen + '%';
+
+        document.getElementById('infoHadir').textContent = hadir + ' Hadir';
+        document.getElementById('infoTidak').textContent = tidakHadir + ' Tidak Hadir';
+        document.getElementById('infoTotal').textContent = total + ' Total';
+        document.getElementById('infoPersen').textContent = persen + '%';
+        document.getElementById('rekapBadge').textContent = total;
+    }
 
     // ============================================================
     // EXPORT EXCEL FUNCTIONS
@@ -2763,10 +3663,14 @@
 
     function updateExportDropdowns() {
         const select = document.getElementById('exportKelas');
+        const current = select.value;
         select.innerHTML = '<option value="semua">Semua Kelas</option>';
         classList.forEach(c => {
             select.innerHTML += `<option value="${c}">${c}</option>`;
         });
+        if (current && classList.includes(current)) {
+            select.value = current;
+        }
     }
 
     // ============================================================
@@ -2774,14 +3678,16 @@
     // ============================================================
     function initApp() {
         const loaded = loadData();
-        if (!loaded) {
+        
+        if (!loaded || students.length === 0) {
+            console.log('📦 Menggunakan data default...');
             const defaultData = getDefaultData();
             students = defaultData.students;
             attendance = defaultData.attendance;
             classList = defaultData.classes;
             scanHistory = [];
             nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
-            saveData();
+            autoSave();
         }
 
         renderAll();
@@ -2789,6 +3695,8 @@
         updateScanInfo();
         renderScanHistory();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
 
         setTimeout(() => {
             const scanTab = document.getElementById('tabScan');
@@ -2799,7 +3707,9 @@
 
         console.log('📱 Admin & Scanner siap digunakan!');
         console.log('📚 Total siswa: ' + students.length);
-        console.log('📤 Upload Excel untuk tambah siswa massal siap!');
+        console.log('📋 Total kelas: ' + classList.length);
+        console.log('📊 Total absensi: ' + Object.keys(attendance).length + ' hari');
+        console.log('💾 Data tersimpan di LocalStorage');
     }
 
     // ============================================================
@@ -2816,9 +3726,20 @@
         const tbody = document.getElementById('tableBody');
         if (!tbody) return;
 
-        if (students.length === 0) {
+        // Filter berdasarkan kelas
+        const filterKelas = document.getElementById('filterKelas').value;
+        let filteredStudents = students;
+        if (filterKelas !== 'semua') {
+            filteredStudents = students.filter(s => s.kelas === filterKelas);
+        }
+
+        // Update count
+        document.getElementById('filterCount').textContent = filteredStudents.length;
+
+        if (filteredStudents.length === 0) {
             tbody.innerHTML = `<tr><td colspan="10" class="empty-message">
-                <i class="fas fa-inbox" style="margin-right:10px;"></i>Belum ada data siswa
+                <i class="fas fa-inbox" style="margin-right:10px;"></i>
+                ${students.length === 0 ? 'Belum ada data siswa' : 'Tidak ada siswa di kelas ini'}
             </td></tr>`;
             return;
         }
@@ -2826,7 +3747,7 @@
         const today = new Date().toISOString().split('T')[0];
 
         let html = '';
-        students.forEach((s, idx) => {
+        filteredStudents.forEach((s, idx) => {
             const checked = selectedIds.has(s.id) ? 'checked' : '';
             const foto = s.foto ? `<img src="${s.foto}" class="photo-thumb">` :
                 `<i class="fas fa-user-circle" style="font-size:30px;color:#b6cfdf;"></i>`;
@@ -2894,10 +3815,14 @@
             const current = bulk.value;
             bulk.innerHTML = '<option value="">Pilih Kelas...</option>' +
                 classList.map(c => `<option value="${c}">${c}</option>`).join('');
-            bulk.value = current;
+            if (current && classList.includes(current)) {
+                bulk.value = current;
+            }
         }
 
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
     }
 
     function updateCounts() {
@@ -3003,6 +3928,22 @@
         updateDashboard();
     }
 
+    function clearScanHistory() {
+        const today = new Date().toISOString().split('T')[0];
+        if (attendance[today]) {
+            attendance[today] = {};
+            autoSave();
+            renderScanHistory();
+            renderTable();
+            updateDashboard();
+            updateScanInfo();
+            renderRekapKelas();
+            showToast('🗑️ Riwayat hari ini dihapus', 'info');
+        } else {
+            showToast('⚠️ Tidak ada riwayat hari ini', 'error');
+        }
+    }
+
     // ============================================================
     // STUDENT CRUD
     // ============================================================
@@ -3088,7 +4029,7 @@
 
     function clearForm() {
         document.getElementById('studentForm').reset();
-        document.getElementById('fotoPreview').innerHTML = '';
+        document.getElementById('fotoPreview').innerHTML = '<span style="color:#64879e; font-size:0.8rem;">Belum ada foto</span>';
         pendingFoto = null;
         editingId = null;
         document.getElementById('formTitle').textContent = 'Tambah Siswa Baru';
@@ -3136,12 +4077,14 @@
 
         editingId = null;
         clearForm();
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateScanInfo();
         renderScanHistory();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         switchTab('students');
     }
 
@@ -3166,12 +4109,14 @@
             clearForm();
             editingId = null;
         }
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateScanInfo();
         renderScanHistory();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         showToast(`🗑️ Siswa "${s.namaLengkap}" dihapus`, 'info');
     }
 
@@ -3253,10 +4198,12 @@
         classList.push(name);
         classList.sort();
         input.value = '';
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         showToast(`✅ Kelas "${name}" ditambahkan`, 'success');
     }
 
@@ -3265,10 +4212,12 @@
         if (count > 0 && !confirm(`Ada ${count} siswa di kelas "${name}". Lanjutkan?`)) return;
         students.forEach(s => { if (s.kelas === name) s.kelas = ''; });
         classList = classList.filter(c => c !== name);
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         showToast(`🗑️ Kelas "${name}" dihapus`, 'info');
     }
 
@@ -3277,10 +4226,12 @@
         if (!confirm('Hapus SEMUA kelas?')) return;
         students.forEach(s => s.kelas = '');
         classList = [];
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         showToast('🗑️ Semua kelas dihapus', 'info');
     }
 
@@ -3288,8 +4239,14 @@
     // BULK OPERATIONS
     // ============================================================
     function toggleAll() {
+        const filterKelas = document.getElementById('filterKelas').value;
+        let filteredStudents = students;
+        if (filterKelas !== 'semua') {
+            filteredStudents = students.filter(s => s.kelas === filterKelas);
+        }
+        
         const checked = document.getElementById('selectAll').checked;
-        students.forEach(s => {
+        filteredStudents.forEach(s => {
             if (checked) selectedIds.add(s.id);
             else selectedIds.delete(s.id);
         });
@@ -3303,7 +4260,12 @@
     }
 
     function selectAllStudents() {
-        students.forEach(s => selectedIds.add(s.id));
+        const filterKelas = document.getElementById('filterKelas').value;
+        let filteredStudents = students;
+        if (filterKelas !== 'semua') {
+            filteredStudents = students.filter(s => s.kelas === filterKelas);
+        }
+        filteredStudents.forEach(s => selectedIds.add(s.id));
         renderTable();
     }
 
@@ -3328,10 +4290,12 @@
             classList.sort();
         }
 
-        saveData();
+        autoSave();
         renderAll();
         updateDashboard();
         updateExportDropdowns();
+        updateRekapDropdowns();
+        updateFilterDropdown();
         clearSelection();
         showToast(`✅ ${selectedIds.size} siswa diubah ke ${newClass}`, 'success');
     }
@@ -3346,8 +4310,10 @@
             renderClassTags();
             updateClassDropdowns();
             updateExportDropdowns();
+            updateRekapDropdowns();
+            updateFilterDropdown();
         }
-        saveData();
+        autoSave();
         renderTable();
     }
 
@@ -3488,7 +4454,7 @@
         }
         attendance[today][student.id] = 'Hadir';
 
-        saveData();
+        autoSave();
 
         showSuccessPopup(student, 'success');
         showToast(`✅ ${student.namaLengkap} berhasil absen!`, 'success');
@@ -3498,6 +4464,7 @@
         updateDashboard();
         renderTable();
         renderScanHistory();
+        renderRekapKelas();
     }
 
     // ============================================================
@@ -3680,6 +4647,7 @@
         toast.className = 'toast show';
         if (type === 'error') toast.classList.add('error');
         else if (type === 'success') toast.classList.add('success');
+        else if (type === 'warning') toast.classList.add('warning');
 
         clearTimeout(toast._timer);
         toast._timer = setTimeout(() => {
@@ -3692,7 +4660,7 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-        const btnMap = { dashboard: 0, students: 1, add: 2, upload: 3, classes: 4, scan: 5, export: 6 };
+        const btnMap = { dashboard: 0, students: 1, add: 2, upload: 3, classes: 4, rekap: 5, scan: 6, export: 7 };
         const idx = btnMap[tab] || 0;
         document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
 
@@ -3701,7 +4669,8 @@
             students: 'tabStudents', 
             add: 'tabAdd', 
             upload: 'tabUpload',
-            classes: 'tabClasses', 
+            classes: 'tabClasses',
+            rekap: 'tabRekap', 
             scan: 'tabScan', 
             export: 'tabExport' 
         };
@@ -3716,6 +4685,12 @@
                     startScanner();
                 }
             }, 500);
+        }
+
+        if (tab === 'rekap') {
+            setTimeout(() => {
+                renderRekapKelas();
+            }, 300);
         }
     }
 
@@ -3741,7 +4716,7 @@
             };
             reader.readAsDataURL(file);
         } else {
-            preview.innerHTML = '';
+            preview.innerHTML = '<span style="color:#64879e; font-size:0.8rem;">Belum ada foto</span>';
             pendingFoto = null;
         }
     });
@@ -3754,6 +4729,7 @@
         if (isScanning) {
             stopScanner();
         }
+        autoSave();
     });
 
     document.addEventListener('visibilitychange', function() {
@@ -3807,8 +4783,17 @@
     window.updateExportDropdowns = updateExportDropdowns;
     window.handleFileUpload = handleFileUpload;
     window.downloadTemplate = downloadTemplate;
+    window.updateRekapDropdowns = updateRekapDropdowns;
+    window.renderRekapKelas = renderRekapKelas;
+    window.updateFilterDropdown = updateFilterDropdown;
+    window.autoSave = autoSave;
 
-    initApp();
+    // Jalankan init setelah DOM siap
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
 </script>
 </body>
 </html>
