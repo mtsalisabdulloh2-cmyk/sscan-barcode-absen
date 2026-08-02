@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin & Scan Barcode - Realtime Firebase</title>
+    <title>Admin & Scan Barcode - LocalStorage</title>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ============================================================
@@ -71,7 +72,7 @@
             flex-wrap: wrap;
         }
 
-        .firebase-status {
+        .storage-status {
             padding: 0.3rem 1rem;
             border-radius: 20px;
             font-size: 0.75rem;
@@ -79,23 +80,17 @@
             display: flex;
             align-items: center;
             gap: 0.4rem;
-        }
-
-        .firebase-connected {
             background: #e8f5e9;
             color: #2e7d32;
         }
-        .firebase-connected .pulse-dot {
+
+        .storage-status .dot {
             display: inline-block;
             width: 8px;
             height: 8px;
             background: #2e7d32;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
-        }
-        .firebase-disconnected {
-            background: #ffebee;
-            color: #c62828;
         }
 
         @keyframes pulse {
@@ -160,6 +155,15 @@
         }
         .btn-outline:hover {
             background: #e3eff8;
+        }
+
+        .btn-purple {
+            background: #6c3b8a;
+            color: white;
+        }
+        .btn-purple:hover {
+            background: #5a2f74;
+            transform: translateY(-2px);
         }
 
         .btn-sm {
@@ -252,7 +256,7 @@
             color: #2a7f9e;
         }
 
-        .realtime-badge {
+        .local-badge {
             font-size: 0.6rem;
             background: #e8f5e9;
             color: #2e7d32;
@@ -265,7 +269,7 @@
             gap: 0.3rem;
         }
 
-        .realtime-badge .live-dot {
+        .local-badge .dot {
             display: inline-block;
             width: 6px;
             height: 6px;
@@ -364,7 +368,7 @@
         }
 
         /* ============================================================
-           SCANNER
+           SCANNER - DENGAN EFEK MIRROR (KACA)
            ============================================================ */
         .scanner-wrapper {
             display: grid;
@@ -389,10 +393,40 @@
             height: 100%;
         }
 
+        /* EFEK MIRROR / KACA - Membalik video secara horizontal */
         #reader video {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transform: scaleX(-1);
+            -webkit-transform: scaleX(-1);
+            -moz-transform: scaleX(-1);
+            -ms-transform: scaleX(-1);
+            -o-transform: scaleX(-1);
+        }
+
+        /* Label Mirror */
+        .mirror-label {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .mirror-label i {
+            color: #4aa3c9;
         }
 
         .scanner-overlay {
@@ -407,6 +441,7 @@
             justify-content: center;
         }
 
+        /* Scanner frame tetap normal (tidak terbalik) */
         .scanner-frame {
             width: 70%;
             height: 70%;
@@ -507,7 +542,7 @@
             border-radius: 16px;
             border: 1px solid #e0ecf5;
             padding: 1rem;
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
@@ -518,6 +553,12 @@
             padding: 0.6rem 0.8rem;
             border-bottom: 1px solid #eef4f8;
             transition: 0.2s;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .scan-history .history-item:hover {
@@ -530,8 +571,8 @@
         }
 
         .scan-history .history-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: #e3eff8;
             display: flex;
@@ -572,10 +613,10 @@
         }
 
         .scan-history .history-status {
-            padding: 0.2rem 0.6rem;
-            border-radius: 10px;
-            font-size: 0.65rem;
-            font-weight: 600;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
             white-space: nowrap;
         }
 
@@ -584,27 +625,39 @@
             color: #2e7d32;
         }
 
-        .scan-history .history-status.already {
-            background: #fff3e0;
-            color: #e65100;
-        }
-
-        .scan-history .history-status.error {
-            background: #ffebee;
-            color: #c62828;
-        }
-
         .scan-history .empty-history {
             text-align: center;
-            padding: 2rem;
+            padding: 2.5rem;
             color: #64879e;
-            font-style: italic;
+        }
+
+        .scan-history .empty-history i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #b6cfdf;
         }
 
         .scan-history .history-count {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #64879e;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e8f0f6;
+        }
+
+        .scan-history .history-count span {
+            font-weight: 700;
+            color: #2b8c6b;
+        }
+
+        .hadir-badge {
+            background: #2b8c6b;
+            color: white;
+            padding: 0.1rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
         }
 
         .info-bar {
@@ -831,7 +884,115 @@
         }
 
         /* ============================================================
-           POPUP - AUTO CLOSE
+           EXPORT SECTION
+           ============================================================ */
+        .export-section {
+            background: #f8fcff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e0ecf5;
+            margin-bottom: 1rem;
+        }
+
+        .export-section .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .export-section .export-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        .export-section .export-grid .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f4a61;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .export-section .export-grid .form-group select,
+        .export-section .export-grid .form-group input {
+            padding: 0.6rem 1rem;
+            border: 2px solid #dce8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: white;
+            outline: none;
+            width: 100%;
+        }
+
+        .export-section .export-grid .form-group select:focus,
+        .export-section .export-grid .form-group input:focus {
+            border-color: #2a7f9e;
+            box-shadow: 0 0 0 3px rgba(42, 127, 158, 0.15);
+        }
+
+        .export-section .export-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .export-preview {
+            margin-top: 1rem;
+            overflow: auto;
+            max-height: 400px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e0ecf5;
+        }
+
+        .export-preview table {
+            font-size: 0.75rem;
+            min-width: 600px;
+        }
+
+        .export-preview table th {
+            background: #1f5a77;
+            color: white;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .export-preview table td {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.7rem;
+        }
+
+        .export-preview table .status-hadir {
+            color: #2e7d32;
+            font-weight: 700;
+        }
+        .export-preview table .status-tidak {
+            color: #c62828;
+            font-weight: 700;
+        }
+        .export-preview table .status-terlambat {
+            color: #e65100;
+            font-weight: 700;
+        }
+        .export-preview table .status-izin {
+            color: #0d47a1;
+            font-weight: 700;
+        }
+
+        .export-preview table .total-row {
+            background: #e3eff8;
+            font-weight: 700;
+        }
+
+        .export-preview table .total-row td {
+            border-top: 2px solid #2a7f9e;
+        }
+
+        /* ============================================================
+           POPUP
            ============================================================ */
         .popup-overlay {
             display: none;
@@ -870,7 +1031,6 @@
             position: relative;
         }
 
-        /* Timer Progress Bar */
         .popup-timer-bar {
             position: absolute;
             bottom: 0;
@@ -919,21 +1079,6 @@
             50% { transform: scale(1.3) rotate(5deg); }
             70% { transform: scale(0.9) rotate(-3deg); }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        .popup-container .popup-icon .fa-check-circle {
-            color: #2b8c6b;
-            filter: drop-shadow(0 10px 30px rgba(43, 140, 107, 0.3));
-        }
-
-        .popup-container .popup-icon .fa-times-circle {
-            color: #c62828;
-            filter: drop-shadow(0 10px 30px rgba(198, 40, 40, 0.3));
-        }
-
-        .popup-container .popup-icon .fa-exclamation-triangle {
-            color: #e65100;
-            filter: drop-shadow(0 10px 30px rgba(230, 81, 0, 0.3));
         }
 
         .popup-container .popup-avatar {
@@ -1271,6 +1416,8 @@
             .popup-container { padding: 1.5rem; margin: 1rem; }
             .popup-container .popup-name { font-size: 1.3rem; }
             .popup-container .popup-avatar { width: 80px; height: 80px; }
+            .export-section .export-grid { grid-template-columns: 1fr; }
+            .export-preview { max-height: 300px; }
         }
     </style>
 </head>
@@ -1283,18 +1430,24 @@
             <h1>
                 <i class="fas fa-user-graduate"></i> Admin & Scanner
                 <span class="badge" id="totalCount">0 siswa</span>
-                <span class="realtime-badge"><span class="live-dot"></span> LIVE</span>
+                <span class="local-badge"><span class="dot"></span> LocalStorage</span>
             </h1>
             <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
-                <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Realtime Firebase - Auto Close Popup
+                <i class="fas fa-mirror" style="color:#4aa3c9;"></i> Kamera <strong>Mirror (Kaca)</strong> - Seperti bercermin
             </div>
         </div>
         <div class="header-right">
-            <span class="firebase-status firebase-connected" id="firebaseStatus">
-                <span class="pulse-dot"></span> Terhubung
+            <span class="storage-status">
+                <span class="dot"></span> Offline
             </span>
-            <button class="btn btn-outline btn-sm" onclick="forceSync()">
-                <i class="fas fa-sync"></i> Sync Manual
+            <button class="btn btn-outline btn-sm" onclick="exportData()">
+                <i class="fas fa-download"></i> Backup
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="importData()">
+                <i class="fas fa-upload"></i> Restore
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="resetAllData()">
+                <i class="fas fa-trash"></i> Reset
             </button>
         </div>
     </div>
@@ -1317,6 +1470,13 @@
         <button class="tab-btn" onclick="switchTab('scan')">
             <i class="fas fa-qrcode"></i> Scan Barcode
             <span class="tab-badge" id="scanBadge">0</span>
+            <span class="hadir-badge" id="hadirBadge">0 Hadir</span>
+            <span style="font-size:0.55rem; background:#4aa3c9; color:white; padding:0.1rem 0.5rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
+                <i class="fas fa-mirror"></i> Mirror
+            </span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('export')">
+            <i class="fas fa-file-excel" style="color:#217346;"></i> Export Excel
         </button>
     </div>
 
@@ -1327,8 +1487,8 @@
         <div class="card">
             <div class="card-title">
                 <i class="fas fa-chart-bar"></i> Dashboard
-                <span class="realtime-badge" style="font-size:0.65rem;">
-                    <span class="live-dot"></span> Realtime
+                <span class="local-badge" style="font-size:0.65rem;">
+                    <span class="dot"></span> LocalStorage
                 </span>
             </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
@@ -1346,20 +1506,20 @@
                 </div>
                 <div style="background:#f8fcff; border-radius:16px; padding:1.5rem; text-align:center; border:1px solid #e0ecf5;">
                     <div style="font-size:2.5rem; font-weight:700; color:#6c3b8a;" id="dashScan">0</div>
-                    <div style="color:#64879e; font-size:0.85rem;">Total Scan Hari Ini</div>
+                    <div style="color:#64879e; font-size:0.85rem;">Total Hadir Hari Ini</div>
                 </div>
             </div>
             <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
                 <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
-                    <span><i class="fas fa-bolt" style="color:#2b8c6b;"></i> <strong>Realtime</strong> - Popup otomatis tertutup</span>
-                    <span><i class="fas fa-clock"></i> Popup tertutup setelah 3.5 detik</span>
+                    <span><i class="fas fa-mirror" style="color:#4aa3c9;"></i> <strong>Mirror Mode</strong> - Kamera seperti bercermin</span>
+                    <span><i class="fas fa-clock"></i> Data tersimpan di LocalStorage</span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ============================================================
-         TAB: DATA SISWA
+         TAB: DATA SISWA (DIPERLUKAN TAPI DISINGKAT)
          ============================================================ -->
     <div class="tab-content" id="tabStudents">
         <div class="bulk-bar">
@@ -1516,20 +1676,23 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN BARCODE - AUTO CLOSE POPUP
+         TAB: SCAN BARCODE - DENGAN EFEK MIRROR
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
             <div class="card-title">
                 <i class="fas fa-qrcode"></i> Scan Barcode
-                <span class="realtime-badge" style="font-size:0.65rem;">
-                    <span class="live-dot"></span> Realtime
+                <span class="local-badge" style="font-size:0.65rem;">
+                    <span class="dot"></span> LocalStorage
                 </span>
                 <span style="font-size:0.6rem; background:#e3f2fd; color:#0d47a1; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
                     <i class="fas fa-video"></i> Auto Start
                 </span>
                 <span style="font-size:0.6rem; background:#e8f5e9; color:#2e7d32; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
-                    <i class="fas fa-clock"></i> Auto Close 3.5s
+                    <i class="fas fa-check-circle"></i> Hanya Hadir
+                </span>
+                <span style="font-size:0.55rem; background:#4aa3c9; color:white; padding:0.1rem 0.6rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
+                    <i class="fas fa-mirror"></i> Mirror
                 </span>
             </div>
 
@@ -1547,6 +1710,10 @@
             <div class="scanner-wrapper">
                 <div class="scanner-container">
                     <div id="reader"></div>
+                    <!-- Label Mirror -->
+                    <div class="mirror-label">
+                        <i class="fas fa-mirror"></i> MIRROR
+                    </div>
                     <div class="scanner-overlay">
                         <div class="scanner-frame">
                             <div class="corner tl"></div>
@@ -1566,8 +1733,8 @@
                     </div>
 
                     <div class="scanner-status" id="scannerStatus">
-                        <i class="fas fa-video"></i>
-                        <span>Kamera aktif <span class="highlight">otomatis</span> - Arahkan ke QR/Barcode</span>
+                        <i class="fas fa-mirror" style="color:#4aa3c9;"></i>
+                        <span>Kamera <span class="highlight">mirror (kaca)</span> - Seperti bercermin</span>
                     </div>
 
                     <div class="scanner-buttons">
@@ -1587,18 +1754,86 @@
             <div style="margin-top:1.5rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
                     <div style="font-weight:600; color:#0a2a3e; display:flex; align-items:center; gap:0.5rem;">
-                        <i class="fas fa-history" style="color:#2a7f9e;"></i> Riwayat Scan
-                        <span class="badge" id="historyCount" style="background:#d4e3ef; color:#134a63; border-radius:40px; padding:0.1rem 0.8rem; font-size:0.7rem;">0</span>
+                        <i class="fas fa-check-circle" style="color:#2b8c6b;"></i> Daftar Siswa Hadir
+                        <span class="badge" id="historyCount" style="background:#2b8c6b; color:white; border-radius:40px; padding:0.1rem 0.8rem; font-size:0.7rem;">0</span>
                     </div>
                     <div style="font-size:0.75rem; color:#64879e;">
-                        <i class="fas fa-bolt" style="color:#2b8c6b;"></i> Update realtime dari Firebase
+                        <i class="fas fa-info-circle"></i> Hanya siswa yang <strong>HADIR</strong> yang muncul
                     </div>
                 </div>
 
                 <div class="scan-history" id="scanHistory">
                     <div class="empty-history">
-                        <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
-                        Belum ada riwayat scan hari ini
+                        <i class="fas fa-inbox" style="font-size:3rem; display:block; margin-bottom:0.8rem; color:#b6cfdf;"></i>
+                        <p style="font-size:1.1rem; color:#64879e;">Belum ada siswa yang hadir</p>
+                        <p style="font-size:0.85rem; color:#b6cfdf; margin-top:0.3rem;">Scan barcode untuk mencatat kehadiran</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TAB: EXPORT EXCEL
+         ============================================================ -->
+    <div class="tab-content" id="tabExport">
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-file-excel" style="color:#217346;"></i> Export Excel
+                <span class="local-badge" style="font-size:0.65rem;">
+                    <span class="dot"></span> Pivot Table
+                </span>
+            </div>
+
+            <div class="export-section">
+                <div class="export-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> Pilih Kelas</label>
+                        <select id="exportKelas">
+                            <option value="semua">Semua Kelas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Periode</label>
+                        <select id="exportPeriode">
+                            <option value="hari">Hari Ini</option>
+                            <option value="minggu">Minggu Ini</option>
+                            <option value="bulan">Bulan Ini</option>
+                            <option value="semua">Semua Data</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-format"></i> Format</label>
+                        <select id="exportFormat">
+                            <option value="xlsx">Excel (.xlsx)</option>
+                            <option value="csv">CSV (.csv)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="export-actions">
+                    <button class="btn btn-success" onclick="exportExcel()">
+                        <i class="fas fa-download"></i> Download Excel
+                    </button>
+                    <button class="btn btn-outline" onclick="previewExport()">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                    <button class="btn btn-outline" onclick="exportAllClasses()">
+                        <i class="fas fa-file-excel"></i> Export Semua Kelas
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top:0.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+                    <div style="font-weight:600; color:#0a2a3e; display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fas fa-table" style="color:#2a7f9e;"></i> Preview Export
+                        <span style="font-size:0.7rem; color:#64879e; font-weight:400;">(Pivot Table per Kelas)</span>
+                    </div>
+                </div>
+                <div class="export-preview" id="exportPreview">
+                    <div style="padding:2rem; text-align:center; color:#64879e;">
+                        <i class="fas fa-eye" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                        Klik <strong>Preview</strong> untuk melihat data
                     </div>
                 </div>
             </div>
@@ -1607,15 +1842,13 @@
 </div>
 
 <!-- ============================================================
-     POPUP - AUTO CLOSE
+     POPUP
      ============================================================ -->
 <div class="popup-overlay" id="successPopup">
     <div class="popup-container">
-        <!-- Timer Progress Bar -->
         <div class="popup-timer-bar">
             <div class="timer-fill" id="timerFill"></div>
         </div>
-
         <div class="popup-icon" id="popupIcon">
             <i class="fas fa-check-circle"></i>
         </div>
@@ -1650,48 +1883,6 @@
     <span id="toastMsg">Pesan</span>
 </div>
 
-<!-- ============================================================
-     FIREBASE SDK
-     ============================================================ -->
-<script type="importmap">
-{
-    "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js",
-        "firebase/database": "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js"
-    }
-}
-</script>
-
-<script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getDatabase, ref, set, get, child, onValue, update, remove } from "firebase/database";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyCFkIrTY4WLburyAdgJJ1c24bNx9Ldt1x8",
-        authDomain: "scan-absen-734a0.firebaseapp.com",
-        projectId: "scan-absen-734a0",
-        storageBucket: "scan-absen-734a0.firebasestorage.app",
-        messagingSenderId: "839071202835",
-        appId: "1:839071202835:web:719c0986c1050463d109e6",
-        measurementId: "G-PBQ5G0HYXS"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const dbRef = ref;
-
-    window.db = database;
-    window.dbRef = dbRef;
-    window.dbGet = get;
-    window.dbSet = set;
-    window.dbChild = child;
-    window.dbOnValue = onValue;
-    window.dbUpdate = update;
-    window.dbRemove = remove;
-
-    console.log('🔥 Firebase Realtime Connected!');
-</script>
-
 <script>
     // ============================================================
     // STATE
@@ -1702,10 +1893,8 @@
     let nextId = 1;
     let editingId = null;
     let selectedIds = new Set();
-    let isSaving = false;
     let pendingFoto = null;
     let scanHistory = [];
-    let isLocalUpdate = false;
 
     // Scanner state
     let html5Scanner = null;
@@ -1713,7 +1902,6 @@
     let scannerStarted = false;
 
     // Popup auto close timer
-    let popupAutoCloseTimer = null;
     let popupCloseTimeout = null;
 
     // ============================================================
@@ -1732,152 +1920,402 @@
     }
 
     // ============================================================
-    // FIREBASE REALTIME LISTENERS
+    // DATA STORAGE FUNCTIONS
     // ============================================================
-    function setupRealtimeListeners() {
-        const db = window.db;
-        const dbRef = window.dbRef;
-        const dbOnValue = window.dbOnValue;
-
-        const studentsRef = dbRef(db, 'absensiData/students');
-        dbOnValue(studentsRef, (snapshot) => {
-            if (isLocalUpdate) return;
-            const data = snapshot.val();
-            if (data) {
-                const newStudents = Object.values(data).filter(s => s !== null);
-                if (JSON.stringify(newStudents) !== JSON.stringify(students)) {
-                    students = newStudents;
-                    nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
-                    renderAll();
-                    updateDashboard();
-                    updateScanInfo();
-                    console.log('📥 Students updated from Firebase (realtime)');
-                }
-            }
-        });
-
-        const attendanceRef = dbRef(db, 'absensiData/attendance');
-        dbOnValue(attendanceRef, (snapshot) => {
-            if (isLocalUpdate) return;
-            const data = snapshot.val();
-            if (data) {
-                if (JSON.stringify(data) !== JSON.stringify(attendance)) {
-                    attendance = data;
-                    renderAll();
-                    updateDashboard();
-                    updateScanInfo();
-                    console.log('📥 Attendance updated from Firebase (realtime)');
-                }
-            }
-        });
-
-        const classesRef = dbRef(db, 'absensiData/classes');
-        dbOnValue(classesRef, (snapshot) => {
-            if (isLocalUpdate) return;
-            const data = snapshot.val();
-            if (data) {
-                if (JSON.stringify(data) !== JSON.stringify(classList)) {
-                    classList = data;
-                    renderAll();
-                    updateDashboard();
-                    console.log('📥 Classes updated from Firebase (realtime)');
-                }
-            }
-        });
-
-        console.log('🔄 Realtime listeners activated!');
+    function saveData() {
+        const data = {
+            students: students,
+            attendance: attendance,
+            classes: classList,
+            scanHistory: scanHistory,
+            nextId: nextId,
+            updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem('siswaData_local', JSON.stringify(data));
+        console.log('💾 Data saved to LocalStorage');
     }
 
-    // ============================================================
-    // SAVE TO FIREBASE
-    // ============================================================
-    async function saveToFirebase() {
-        if (isSaving) return;
-        isSaving = true;
-        isLocalUpdate = true;
-
-        try {
-            const db = window.db;
-            const dbRef = window.dbRef;
-            const dbSet = window.dbSet;
-
-            const data = {
-                students: students,
-                attendance: attendance,
-                classes: classList,
-                updatedAt: new Date().toISOString()
-            };
-
-            await dbSet(dbRef(db, 'absensiData'), data);
-            console.log('💾 Data saved to Firebase');
-            return true;
-        } catch (error) {
-            console.error('Save error:', error);
-            return false;
-        } finally {
-            isSaving = false;
-            setTimeout(() => { isLocalUpdate = false; }, 500);
-        }
-    }
-
-    // ============================================================
-    // FORCE SYNC
-    // ============================================================
-    async function forceSync() {
-        showToast('🔄 Menyinkronkan data...');
-        isLocalUpdate = true;
-        try {
-            await saveToFirebase();
-            showToast('✅ Data tersinkronisasi ke Firebase', 'success');
-        } catch (e) {
-            showToast('❌ Gagal sinkronisasi', 'error');
-        } finally {
-            setTimeout(() => { isLocalUpdate = false; }, 500);
-        }
-    }
-
-    // ============================================================
-    // INIT
-    // ============================================================
-    async function initApp() {
-        const stored = localStorage.getItem('siswaData_realtime');
+    function loadData() {
+        const stored = localStorage.getItem('siswaData_local');
         if (stored) {
             try {
                 const data = JSON.parse(stored);
                 students = data.students || [];
                 attendance = data.attendance || {};
                 classList = data.classes || getDefaultData().classes;
-                nextId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
-            } catch (e) {}
+                scanHistory = data.scanHistory || [];
+                nextId = data.nextId || students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+                return true;
+            } catch (e) {
+                console.error('Load data error:', e);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // ============================================================
+    // EXPORT / IMPORT DATA
+    // ============================================================
+    function exportData() {
+        const data = {
+            students: students,
+            attendance: attendance,
+            classes: classList,
+            scanHistory: scanHistory,
+            nextId: nextId,
+            exportedAt: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_siswa_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('✅ Data berhasil diekspor!', 'success');
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.students) students = data.students;
+                    if (data.attendance) attendance = data.attendance;
+                    if (data.classes) classList = data.classes;
+                    if (data.scanHistory) scanHistory = data.scanHistory;
+                    if (data.nextId) nextId = data.nextId;
+                    saveData();
+                    renderAll();
+                    updateDashboard();
+                    updateScanInfo();
+                    renderScanHistory();
+                    updateExportDropdowns();
+                    showToast('✅ Data berhasil diimpor!', 'success');
+                } catch (err) {
+                    showToast('❌ Gagal mengimpor data!', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    function resetAllData() {
+        if (!confirm('⚠️ HAPUS SEMUA DATA? Tindakan ini tidak dapat dibatalkan!')) return;
+        if (!confirm('⚠️ Yakin ingin menghapus semua data siswa dan absensi?')) return;
+        
+        localStorage.removeItem('siswaData_local');
+        const defaultData = getDefaultData();
+        students = defaultData.students;
+        attendance = defaultData.attendance;
+        classList = defaultData.classes;
+        scanHistory = [];
+        nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+        selectedIds.clear();
+        saveData();
+        renderAll();
+        updateDashboard();
+        updateScanInfo();
+        renderScanHistory();
+        updateExportDropdowns();
+        showToast('🗑️ Semua data telah direset!', 'info');
+    }
+
+    // ============================================================
+    // EXPORT EXCEL FUNCTIONS
+    // ============================================================
+    function getExportData(kelas, periode) {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        
+        let filteredStudents = students;
+        if (kelas !== 'semua') {
+            filteredStudents = students.filter(s => s.kelas === kelas);
         }
 
-        const storedHistory = localStorage.getItem('scanHistory_realtime');
-        if (storedHistory) {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const allHistory = JSON.parse(storedHistory);
-                scanHistory = allHistory[today] || [];
-            } catch (e) {}
+        let dates = Object.keys(attendance).sort();
+        
+        if (periode === 'hari') {
+            dates = dates.filter(d => d === todayStr);
+        } else if (periode === 'minggu') {
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekAgoStr = weekAgo.toISOString().split('T')[0];
+            dates = dates.filter(d => d >= weekAgoStr && d <= todayStr);
+        } else if (periode === 'bulan') {
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            const monthAgoStr = monthAgo.toISOString().split('T')[0];
+            dates = dates.filter(d => d >= monthAgoStr && d <= todayStr);
         }
 
-        if (students.length === 0) {
+        const pivotData = [];
+        const headerRow = ['No', 'Nama', 'NISN', 'Kelas', ...dates, 'Total Hadir', 'Persentase'];
+        pivotData.push(headerRow);
+
+        filteredStudents.forEach((student, index) => {
+            const row = [];
+            row.push(index + 1);
+            row.push(student.namaLengkap);
+            row.push(student.nisn);
+            row.push(student.kelas || '-');
+            
+            let totalHadir = 0;
+            dates.forEach(date => {
+                const status = attendance[date]?.[student.id] || '-';
+                row.push(status);
+                if (status === 'Hadir') totalHadir++;
+            });
+            
+            const totalDays = dates.length || 1;
+            const persentase = Math.round((totalHadir / totalDays) * 100);
+            row.push(totalHadir);
+            row.push(persentase + '%');
+            
+            pivotData.push(row);
+        });
+
+        if (filteredStudents.length > 0) {
+            const totalRow = ['', 'TOTAL', '', ''];
+            let totalHadirAll = 0;
+            dates.forEach((date, idx) => {
+                let hadir = 0;
+                filteredStudents.forEach(student => {
+                    if (attendance[date]?.[student.id] === 'Hadir') hadir++;
+                });
+                totalRow.push(hadir);
+                totalHadirAll += hadir;
+            });
+            const totalDays = dates.length || 1;
+            totalRow.push(totalHadirAll);
+            totalRow.push(Math.round((totalHadirAll / (filteredStudents.length * totalDays)) * 100) + '%');
+            pivotData.push(totalRow);
+        }
+
+        return {
+            headers: headerRow,
+            data: pivotData,
+            dates: dates,
+            students: filteredStudents
+        };
+    }
+
+    function previewExport() {
+        const kelas = document.getElementById('exportKelas').value;
+        const periode = document.getElementById('exportPeriode').value;
+        const container = document.getElementById('exportPreview');
+        
+        const result = getExportData(kelas, periode);
+        
+        if (result.data.length <= 1) {
+            container.innerHTML = `
+                <div style="padding:2rem; text-align:center; color:#64879e;">
+                    <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
+                    Tidak ada data untuk ditampilkan
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<table><thead><tr>';
+        result.headers.forEach(h => {
+            const isDate = h.match(/^\d{4}-\d{2}-\d{2}$/);
+            html += `<th>${isDate ? formatDate(h) : h}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        const totalRowIndex = result.data.length - 1;
+        result.data.forEach((row, rowIdx) => {
+            const isTotal = rowIdx === totalRowIndex && row[0] === '';
+            html += `<tr class="${isTotal ? 'total-row' : ''}">`;
+            row.forEach((cell, cellIdx) => {
+                if (cellIdx >= 4 && cellIdx < result.data[0].length - 2) {
+                    const status = cell;
+                    const statusClass = status === 'Hadir' ? 'status-hadir' :
+                                       status === 'Tidak Hadir' ? 'status-tidak' :
+                                       status === 'Terlambat' ? 'status-terlambat' :
+                                       status === 'Izin' ? 'status-izin' : '';
+                    html += `<td class="${statusClass}">${status}</td>`;
+                } else {
+                    html += `<td>${cell}</td>`;
+                }
+            });
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+        showToast('✅ Preview berhasil dimuat!', 'success');
+    }
+
+    function exportExcel() {
+        const kelas = document.getElementById('exportKelas').value;
+        const periode = document.getElementById('exportPeriode').value;
+        const format = document.getElementById('exportFormat').value;
+        
+        const result = getExportData(kelas, periode);
+        
+        if (result.data.length <= 1) {
+            showToast('⚠️ Tidak ada data untuk diekspor!', 'error');
+            return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(result.data);
+        ws['!cols'] = result.headers.map((h, i) => {
+            if (i === 0) return { wch: 5 };
+            if (i === 1) return { wch: 25 };
+            if (i === 2) return { wch: 15 };
+            if (i === 3) return { wch: 15 };
+            if (i >= 4 && i < result.headers.length - 2) return { wch: 12 };
+            return { wch: 12 };
+        });
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Absensi');
+
+        const fileName = `Absensi_${kelas}_${new Date().toISOString().split('T')[0]}`;
+        
+        if (format === 'xlsx') {
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${fileName}.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } else {
+            const csv = XLSX.utils.sheet_to_csv(ws);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${fileName}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        showToast(`✅ File ${format.toUpperCase()} berhasil didownload!`, 'success');
+    }
+
+    function exportAllClasses() {
+        const periode = document.getElementById('exportPeriode').value;
+        const format = document.getElementById('exportFormat').value;
+        
+        if (classList.length === 0) {
+            showToast('⚠️ Tidak ada kelas untuk diekspor!', 'error');
+            return;
+        }
+
+        const wb = XLSX.utils.book_new();
+        
+        classList.forEach(className => {
+            const result = getExportData(className, periode);
+            if (result.data.length > 1) {
+                const ws = XLSX.utils.aoa_to_sheet(result.data);
+                ws['!cols'] = result.headers.map((h, i) => {
+                    if (i === 0) return { wch: 5 };
+                    if (i === 1) return { wch: 25 };
+                    if (i === 2) return { wch: 15 };
+                    if (i === 3) return { wch: 15 };
+                    if (i >= 4 && i < result.headers.length - 2) return { wch: 12 };
+                    return { wch: 12 };
+                });
+                const sheetName = className.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 31);
+                XLSX.utils.book_append_sheet(wb, ws, sheetName);
+            }
+        });
+
+        const summaryData = [
+            ['Rekap Absensi Semua Kelas'],
+            ['Tanggal Export', new Date().toLocaleString('id-ID')],
+            [''],
+            ['Kelas', 'Jumlah Siswa', 'Total Hadir', 'Persentase']
+        ];
+
+        classList.forEach(className => {
+            const result = getExportData(className, periode);
+            if (result.data.length > 1) {
+                const totalRow = result.data[result.data.length - 1];
+                const totalHadir = totalRow[result.headers.length - 2] || 0;
+                const persentase = totalRow[result.headers.length - 1] || '0%';
+                const jmlSiswa = result.data.length - 1;
+                summaryData.push([className, jmlSiswa, totalHadir, persentase]);
+            }
+        });
+
+        const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+        wsSummary['!cols'] = [{ wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+        XLSX.utils.book_append_sheet(wb, wsSummary, 'Rekap');
+
+        const fileName = `Absensi_Semua_Kelas_${new Date().toISOString().split('T')[0]}`;
+        
+        if (format === 'xlsx') {
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${fileName}.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } else {
+            const firstSheetName = wb.SheetNames[0];
+            const ws = wb.Sheets[firstSheetName];
+            const csv = XLSX.utils.sheet_to_csv(ws);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${fileName}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        showToast(`✅ Semua kelas berhasil diekspor ke ${format.toUpperCase()}!`, 'success');
+    }
+
+    function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function updateExportDropdowns() {
+        const select = document.getElementById('exportKelas');
+        select.innerHTML = '<option value="semua">Semua Kelas</option>';
+        classList.forEach(c => {
+            select.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    function initApp() {
+        const loaded = loadData();
+        if (!loaded) {
             const defaultData = getDefaultData();
             students = defaultData.students;
             attendance = defaultData.attendance;
             classList = defaultData.classes;
-            nextId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
+            scanHistory = [];
+            nextId = students.reduce((max, s) => Math.max(max, s.id || 0), 0) + 1;
+            saveData();
         }
-
-        setupRealtimeListeners();
-        await saveToFirebase();
 
         renderAll();
         updateDashboard();
         updateScanInfo();
         renderScanHistory();
-
-        document.getElementById('firebaseStatus').innerHTML = '<span class="pulse-dot"></span> Terhubung (Realtime)';
-        document.getElementById('firebaseStatus').className = 'firebase-status firebase-connected';
+        updateExportDropdowns();
 
         setTimeout(() => {
             const scanTab = document.getElementById('tabScan');
@@ -1886,21 +2324,19 @@
             }
         }, 1000);
 
-        console.log('📱 Realtime Admin & Scanner siap digunakan!');
+        console.log('📱 Admin & Scanner siap digunakan!');
         console.log('📚 Total siswa: ' + students.length);
-        console.log('🎥 Kamera auto start di tab Scan');
-        console.log('⏰ Popup auto close setelah 3.5 detik');
+        console.log('🪞 Kamera dalam mode Mirror (seperti kaca)');
     }
 
     // ============================================================
-    // RENDER FUNCTIONS
+    // RENDER FUNCTIONS (DIPERLUKAN TAPI DISINGKAT)
     // ============================================================
     function renderAll() {
         renderTable();
         renderClassTags();
         updateClassDropdowns();
         updateCounts();
-        localStorage.setItem('siswaData_realtime', JSON.stringify({ students, attendance, classes: classList }));
     }
 
     function renderTable() {
@@ -1987,6 +2423,8 @@
                 classList.map(c => `<option value="${c}">${c}</option>`).join('');
             bulk.value = current;
         }
+
+        updateExportDropdowns();
     }
 
     function updateCounts() {
@@ -2008,7 +2446,7 @@
         const hadir = attendance[today] ? Object.keys(attendance[today]).length : 0;
         document.getElementById('dashHadir').textContent = hadir;
         document.getElementById('dashKelas').textContent = classList.length;
-        document.getElementById('dashScan').textContent = scanHistory.length;
+        document.getElementById('dashScan').textContent = hadir;
     }
 
     function updateScanInfo() {
@@ -2019,8 +2457,9 @@
         const todayStr = today.toISOString().split('T')[0];
         const hadir = attendance[todayStr] ? Object.keys(attendance[todayStr]).length : 0;
         document.getElementById('scanHadirHari').textContent = hadir;
-        document.getElementById('scanBadge').textContent = scanHistory.length;
-        document.getElementById('historyCount').textContent = scanHistory.length;
+        document.getElementById('scanBadge').textContent = hadir;
+        document.getElementById('hadirBadge').textContent = hadir + ' Hadir';
+        document.getElementById('historyCount').textContent = hadir;
     }
 
     // ============================================================
@@ -2030,42 +2469,57 @@
         const container = document.getElementById('scanHistory');
         if (!container) return;
 
-        if (scanHistory.length === 0) {
+        const today = new Date().toISOString().split('T')[0];
+        
+        const hadirList = [];
+        if (attendance[today]) {
+            Object.keys(attendance[today]).forEach(studentId => {
+                const student = students.find(s => s.id == studentId);
+                if (student && attendance[today][studentId] === 'Hadir') {
+                    hadirList.push({
+                        ...student,
+                        waktu: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                    });
+                }
+            });
+        }
+
+        scanHistory = hadirList;
+
+        if (hadirList.length === 0) {
             container.innerHTML = `
                 <div class="empty-history">
-                    <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:0.5rem; color:#b6cfdf;"></i>
-                    Belum ada riwayat scan hari ini
+                    <i class="fas fa-inbox" style="font-size:3rem; display:block; margin-bottom:0.8rem; color:#b6cfdf;"></i>
+                    <p style="font-size:1.1rem; color:#64879e;">Belum ada siswa yang hadir</p>
+                    <p style="font-size:0.85rem; color:#b6cfdf; margin-top:0.3rem;">Scan barcode untuk mencatat kehadiran</p>
                 </div>
             `;
+            updateScanInfo();
             return;
         }
 
-        const sorted = [...scanHistory].reverse();
-
-        let html = `<div class="history-count"><i class="fas fa-list"></i> ${scanHistory.length} scan hari ini</div>`;
-        sorted.forEach(item => {
-            const statusClass = item.status === 'Hadir' ? 'hadir' :
-                item.status === 'Sudah Absen' ? 'already' : 'error';
-
-            const avatarHtml = item.foto ?
+        let html = `<div class="history-count"><i class="fas fa-check-circle" style="color:#2b8c6b;"></i> <span>${hadirList.length}</span> siswa hadir hari ini</div>`;
+        
+        hadirList.forEach((item, index) => {
+            const avatarHtml = item.foto && item.foto.startsWith('data:image') ?
                 `<img src="${item.foto}" alt="foto">` :
-                `<i class="fas fa-user" style="font-size:1rem; color:#1f5a77;"></i>`;
+                `<i class="fas fa-user" style="font-size:1.2rem; color:#1f5a77;"></i>`;
 
             html += `
-                <div class="history-item">
+                <div class="history-item" style="animation-delay: ${index * 0.05}s;">
                     <div class="history-avatar">
                         ${avatarHtml}
                     </div>
                     <div class="history-info">
-                        <div class="name">${item.nama}</div>
+                        <div class="name">${item.namaLengkap}</div>
                         <div class="detail">
-                            <i class="fas fa-id-card"></i> ${item.kode} 
-                            <i class="fas fa-users" style="margin-left:0.5rem;"></i> ${item.kelas}
+                            <i class="fas fa-id-card"></i> ${item.kodeUnik} 
+                            <i class="fas fa-users" style="margin-left:0.5rem;"></i> ${item.kelas || '-'}
                         </div>
                     </div>
-                    <span class="history-status ${statusClass}">${item.status}</span>
+                    <span class="history-status hadir"><i class="fas fa-check"></i> HADIR</span>
                     <div class="history-time">
-                        <i class="fas fa-clock"></i> ${item.waktu}
+                        <i class="fas fa-clock"></i> ${item.waktu || 'Hari ini'}
                     </div>
                 </div>
             `;
@@ -2076,65 +2530,8 @@
         updateDashboard();
     }
 
-    function addScanHistory(student, status) {
-        const now = new Date();
-        const today = now.toISOString().split('T')[0];
-        const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-        const entry = {
-            nama: student.namaLengkap,
-            kode: student.kodeUnik,
-            kelas: student.kelas || '-',
-            foto: student.foto || '',
-            status: status,
-            waktu: waktu,
-            timestamp: now.toISOString()
-        };
-
-        scanHistory.push(entry);
-
-        const storedHistory = localStorage.getItem('scanHistory_realtime');
-        let allHistory = {};
-        if (storedHistory) {
-            try {
-                allHistory = JSON.parse(storedHistory);
-            } catch (e) {}
-        }
-        if (!allHistory[today]) {
-            allHistory[today] = [];
-        }
-        allHistory[today] = scanHistory;
-        localStorage.setItem('scanHistory_realtime', JSON.stringify(allHistory));
-
-        renderScanHistory();
-    }
-
-    function clearScanHistory() {
-        if (scanHistory.length === 0) {
-            showToast('⚠️ Tidak ada riwayat scan', 'error');
-            return;
-        }
-        if (!confirm('Hapus semua riwayat scan hari ini?')) return;
-
-        const today = new Date().toISOString().split('T')[0];
-        scanHistory = [];
-
-        const storedHistory = localStorage.getItem('scanHistory_realtime');
-        if (storedHistory) {
-            try {
-                const allHistory = JSON.parse(storedHistory);
-                delete allHistory[today];
-                localStorage.setItem('scanHistory_realtime', JSON.stringify(allHistory));
-            } catch (e) {}
-        }
-
-        renderScanHistory();
-        updateDashboard();
-        showToast('🗑️ Riwayat scan dihapus', 'info');
-    }
-
     // ============================================================
-    // STUDENT CRUD
+    // STUDENT CRUD (DIPERLUKAN TAPI DISINGKAT)
     // ============================================================
     function getFormData() {
         return {
@@ -2266,10 +2663,12 @@
 
         editingId = null;
         clearForm();
+        saveData();
         renderAll();
         updateDashboard();
         updateScanInfo();
-        saveToFirebase();
+        renderScanHistory();
+        updateExportDropdowns();
         switchTab('students');
     }
 
@@ -2294,10 +2693,12 @@
             clearForm();
             editingId = null;
         }
+        saveData();
         renderAll();
         updateDashboard();
         updateScanInfo();
-        saveToFirebase();
+        renderScanHistory();
+        updateExportDropdowns();
         showToast(`🗑️ Siswa "${s.namaLengkap}" dihapus`, 'info');
     }
 
@@ -2379,9 +2780,10 @@
         classList.push(name);
         classList.sort();
         input.value = '';
+        saveData();
         renderAll();
         updateDashboard();
-        saveToFirebase();
+        updateExportDropdowns();
         showToast(`✅ Kelas "${name}" ditambahkan`, 'success');
     }
 
@@ -2390,9 +2792,10 @@
         if (count > 0 && !confirm(`Ada ${count} siswa di kelas "${name}". Lanjutkan?`)) return;
         students.forEach(s => { if (s.kelas === name) s.kelas = ''; });
         classList = classList.filter(c => c !== name);
+        saveData();
         renderAll();
         updateDashboard();
-        saveToFirebase();
+        updateExportDropdowns();
         showToast(`🗑️ Kelas "${name}" dihapus`, 'info');
     }
 
@@ -2401,9 +2804,10 @@
         if (!confirm('Hapus SEMUA kelas?')) return;
         students.forEach(s => s.kelas = '');
         classList = [];
+        saveData();
         renderAll();
         updateDashboard();
-        saveToFirebase();
+        updateExportDropdowns();
         showToast('🗑️ Semua kelas dihapus', 'info');
     }
 
@@ -2451,9 +2855,10 @@
             classList.sort();
         }
 
+        saveData();
         renderAll();
         updateDashboard();
-        saveToFirebase();
+        updateExportDropdowns();
         clearSelection();
         showToast(`✅ ${selectedIds.size} siswa diubah ke ${newClass}`, 'success');
     }
@@ -2467,13 +2872,14 @@
             classList.sort();
             renderClassTags();
             updateClassDropdowns();
+            updateExportDropdowns();
         }
+        saveData();
         renderTable();
-        saveToFirebase();
     }
 
     // ============================================================
-    // SCANNER
+    // SCANNER - DENGAN EFEK MIRROR
     // ============================================================
     function startScanner() {
         if (isScanning) {
@@ -2501,7 +2907,7 @@
             scannerStarted = true;
             status.className = 'status-badge scanning';
             status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memindai...';
-            statusText.innerHTML = '<i class="fas fa-video"></i> <span>📷 Kamera aktif - Arahkan ke QR/Barcode</span>';
+            statusText.innerHTML = '<i class="fas fa-mirror" style="color:#4aa3c9;"></i> <span>📷 Kamera <strong>mirror (kaca)</strong> - Seperti bercermin</span>';
 
             html5Scanner.start(
                 { facingMode: "environment" },
@@ -2509,6 +2915,8 @@
                 onScanSuccess,
                 onScanError
             );
+
+            // Efek mirror sudah diterapkan via CSS di #reader video
 
         } catch (err) {
             console.error('Scanner error:', err);
@@ -2531,7 +2939,7 @@
         setTimeout(() => {
             if (isScanning) {
                 const statusText2 = document.getElementById('scannerStatus');
-                statusText2.innerHTML = '<i class="fas fa-video"></i> <span>📷 Kamera aktif - Siap scan berikutnya</span>';
+                statusText2.innerHTML = '<i class="fas fa-mirror" style="color:#4aa3c9;"></i> <span>📷 Kamera mirror aktif - Siap scan berikutnya</span>';
             }
         }, 2000);
     }
@@ -2584,18 +2992,12 @@
     // ============================================================
     // PROCESS ATTENDANCE
     // ============================================================
-    async function processAttendance(kode) {
+    function processAttendance(kode) {
         const student = students.find(s => s.kodeUnik === kode);
 
         if (!student) {
-            addScanHistory({
-                namaLengkap: '❌ Tidak Ditemukan',
-                kodeUnik: kode,
-                kelas: '-',
-                foto: ''
-            }, 'Tidak Ditemukan');
-            showSuccessPopup(null, 'error', `❌ Siswa dengan kode "${kode}" tidak ditemukan!`);
             showToast('❌ Siswa tidak ditemukan!', 'error');
+            showSuccessPopup(null, 'error', `❌ Siswa dengan kode "${kode}" tidak ditemukan!`);
             if (navigator.vibrate) navigator.vibrate(200);
             return;
         }
@@ -2604,9 +3006,8 @@
         const alreadyAbsen = attendance[today] && attendance[today][student.id];
 
         if (alreadyAbsen) {
-            addScanHistory(student, 'Sudah Absen');
-            showSuccessPopup(student, 'already');
             showToast(`⚠️ ${student.namaLengkap} sudah absen hari ini!`, 'info');
+            showSuccessPopup(student, 'already');
             if (navigator.vibrate) navigator.vibrate(100);
             return;
         }
@@ -2616,24 +3017,23 @@
         }
         attendance[today][student.id] = 'Hadir';
 
-        await saveToFirebase();
+        saveData();
 
-        addScanHistory(student, 'Hadir');
         showSuccessPopup(student, 'success');
         showToast(`✅ ${student.namaLengkap} berhasil absen!`, 'success');
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        
         updateScanInfo();
         updateDashboard();
         renderTable();
+        renderScanHistory();
     }
 
     // ============================================================
-    // SUCCESS POPUP - AUTO CLOSE
+    // SUCCESS POPUP
     // ============================================================
     function showSuccessPopup(student, type, errorMessage) {
-        // Clear existing timers
         clearTimeout(popupCloseTimeout);
-        clearTimeout(popupAutoCloseTimer);
 
         const overlay = document.getElementById('successPopup');
         const icon = document.getElementById('popupIcon');
@@ -2649,7 +3049,6 @@
         const closeBtn = document.getElementById('popupCloseBtn');
         const timerFill = document.getElementById('timerFill');
 
-        // Reset timer animation
         timerFill.style.animation = 'none';
         setTimeout(() => {
             timerFill.style.animation = '';
@@ -2664,7 +3063,7 @@
         const now = new Date();
         const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-        let closeDelay = 3500; // 3.5 detik untuk auto close
+        let closeDelay = 3500;
 
         if (type === 'success') {
             icon.innerHTML = '<i class="fas fa-check-circle"></i>';
@@ -2736,12 +3135,11 @@
             kode.textContent = `📌 ${errorMessage || 'Kode tidak valid'}`;
             time.textContent = `⏰ Scan pada: ${waktu}`;
             closeBtn.innerHTML = '<i class="fas fa-times"></i> Tutup';
-            closeDelay = 4000; // Error popup lebih lama (4 detik)
+            closeDelay = 4000;
         }
 
         overlay.classList.add('active');
 
-        // Auto close setelah delay
         popupCloseTimeout = setTimeout(() => {
             closeSuccessPopup();
         }, closeDelay);
@@ -2751,15 +3149,12 @@
         const overlay = document.getElementById('successPopup');
         overlay.classList.remove('active');
         clearTimeout(popupCloseTimeout);
-        clearTimeout(popupAutoCloseTimer);
     }
 
-    // Close popup with click outside
     document.getElementById('successPopup').addEventListener('click', function(e) {
         if (e.target === this) closeSuccessPopup();
     });
 
-    // Close popup with ESC key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeSuccessPopup();
@@ -2826,11 +3221,11 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-        const btnMap = { dashboard: 0, students: 1, add: 2, classes: 3, scan: 4 };
+        const btnMap = { dashboard: 0, students: 1, add: 2, classes: 3, scan: 4, export: 5 };
         const idx = btnMap[tab] || 0;
         document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
 
-        const contentMap = { dashboard: 'tabDashboard', students: 'tabStudents', add: 'tabAdd', classes: 'tabClasses', scan: 'tabScan' };
+        const contentMap = { dashboard: 'tabDashboard', students: 'tabStudents', add: 'tabAdd', classes: 'tabClasses', scan: 'tabScan', export: 'tabExport' };
         document.getElementById(contentMap[tab])?.classList.add('active');
 
         if (tab === 'scan') {
@@ -2845,7 +3240,6 @@
         }
     }
 
-    // Auto-generate username from nama
     document.getElementById('namaLengkap').addEventListener('input', function() {
         const username = document.getElementById('username');
         if (!username.value || username.dataset.auto === 'true') {
@@ -2857,7 +3251,6 @@
         this.dataset.auto = 'false';
     });
 
-    // Foto preview
     document.getElementById('uploadFoto').addEventListener('change', function(e) {
         const file = e.target.files[0];
         const preview = document.getElementById('fotoPreview');
@@ -2874,19 +3267,16 @@
         }
     });
 
-    // Modal close on overlay click
     document.getElementById('detailModal').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
 
-    // Cleanup scanner on page unload
     window.addEventListener('beforeunload', function() {
         if (isScanning) {
             stopScanner();
         }
     });
 
-    // Handle visibility change
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden) {
             const scanTab = document.getElementById('tabScan');
@@ -2902,7 +3292,9 @@
     // EXPOSE & INIT
     // ============================================================
     window.switchTab = switchTab;
-    window.forceSync = forceSync;
+    window.exportData = exportData;
+    window.importData = importData;
+    window.resetAllData = resetAllData;
     window.generateKode = generateKode;
     window.togglePassword = togglePassword;
     window.copyText = copyText;
@@ -2930,7 +3322,10 @@
     window.closeSuccessPopup = closeSuccessPopup;
     window.clearScanHistory = clearScanHistory;
     window.renderScanHistory = renderScanHistory;
-    window.addScanHistory = addScanHistory;
+    window.exportExcel = exportExcel;
+    window.previewExport = previewExport;
+    window.exportAllClasses = exportAllClasses;
+    window.updateExportDropdowns = updateExportDropdowns;
 
     initApp();
 </script>
