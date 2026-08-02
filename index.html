@@ -368,7 +368,154 @@
         }
 
         /* ============================================================
-           SCANNER - DENGAN EFEK MIRROR (KACA)
+           UPLOAD EXCEL
+           ============================================================ */
+        .upload-excel-section {
+            background: #f8fcff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #e0ecf5;
+            margin-bottom: 1rem;
+        }
+
+        .upload-excel-section .upload-zone {
+            border: 2px dashed #b6cfdf;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+            background: white;
+        }
+
+        .upload-excel-section .upload-zone:hover {
+            border-color: #2a7f9e;
+            background: #f0f7fc;
+        }
+
+        .upload-excel-section .upload-zone.dragover {
+            border-color: #2b8c6b;
+            background: #e8f5e9;
+        }
+
+        .upload-excel-section .upload-zone i {
+            font-size: 3rem;
+            color: #b6cfdf;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-excel-section .upload-zone .upload-text {
+            font-size: 1rem;
+            color: #1f4a61;
+            font-weight: 600;
+        }
+
+        .upload-excel-section .upload-zone .upload-sub {
+            font-size: 0.85rem;
+            color: #64879e;
+            margin-top: 0.3rem;
+        }
+
+        .upload-excel-section .upload-zone .upload-format {
+            display: inline-block;
+            background: #e3eff8;
+            color: #1f5a77;
+            padding: 0.2rem 0.8rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .upload-excel-section .upload-info {
+            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .upload-excel-section .upload-info .info-item {
+            background: white;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e0ecf5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-excel-section .upload-info .info-item i {
+            color: #2a7f9e;
+            font-size: 1rem;
+        }
+
+        .upload-excel-section .upload-info .info-item span {
+            font-size: 0.8rem;
+            color: #1f4a61;
+        }
+
+        .upload-excel-section .upload-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .upload-excel-section .upload-result.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .upload-excel-section .upload-result.success {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .upload-excel-section .upload-result.error {
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+        }
+
+        .upload-excel-section .upload-result .result-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .upload-excel-section .upload-result .result-detail {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 0.3rem;
+        }
+
+        .upload-excel-section .upload-result .result-list {
+            margin-top: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+        }
+
+        .upload-excel-section .upload-result .result-list .list-item {
+            padding: 0.2rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .upload-excel-section .upload-result .result-list .list-item .status-icon {
+            margin-right: 0.5rem;
+        }
+
+        .upload-excel-section .upload-result .result-list .list-item .status-icon.success {
+            color: #2e7d32;
+        }
+
+        .upload-excel-section .upload-result .result-list .list-item .status-icon.error {
+            color: #c62828;
+        }
+
+        /* ============================================================
+           SCANNER
            ============================================================ */
         .scanner-wrapper {
             display: grid;
@@ -393,19 +540,14 @@
             height: 100%;
         }
 
-        /* EFEK MIRROR / KACA - Membalik video secara horizontal */
         #reader video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transform: scaleX(-1);
             -webkit-transform: scaleX(-1);
-            -moz-transform: scaleX(-1);
-            -ms-transform: scaleX(-1);
-            -o-transform: scaleX(-1);
         }
 
-        /* Label Mirror */
         .mirror-label {
             position: absolute;
             top: 10px;
@@ -441,7 +583,6 @@
             justify-content: center;
         }
 
-        /* Scanner frame tetap normal (tidak terbalik) */
         .scanner-frame {
             width: 70%;
             height: 70%;
@@ -1418,6 +1559,7 @@
             .popup-container .popup-avatar { width: 80px; height: 80px; }
             .export-section .export-grid { grid-template-columns: 1fr; }
             .export-preview { max-height: 300px; }
+            .upload-excel-section .upload-zone { padding: 1rem; }
         }
     </style>
 </head>
@@ -1433,7 +1575,7 @@
                 <span class="local-badge"><span class="dot"></span> LocalStorage</span>
             </h1>
             <div style="margin-top:0.3rem; font-size:0.8rem; color:#64879e;">
-                <i class="fas fa-mirror" style="color:#4aa3c9;"></i> Kamera <strong>Mirror (Kaca)</strong> - Seperti bercermin
+                <i class="fas fa-file-excel" style="color:#217346;"></i> Upload Excel untuk tambah siswa massal
             </div>
         </div>
         <div class="header-right">
@@ -1464,6 +1606,9 @@
         <button class="tab-btn" onclick="switchTab('add')">
             <i class="fas fa-plus-circle"></i> Tambah Siswa
         </button>
+        <button class="tab-btn" onclick="switchTab('upload')">
+            <i class="fas fa-file-excel" style="color:#217346;"></i> Upload Excel
+        </button>
         <button class="tab-btn" onclick="switchTab('classes')">
             <i class="fas fa-users"></i> Kelas
         </button>
@@ -1471,9 +1616,6 @@
             <i class="fas fa-qrcode"></i> Scan Barcode
             <span class="tab-badge" id="scanBadge">0</span>
             <span class="hadir-badge" id="hadirBadge">0 Hadir</span>
-            <span style="font-size:0.55rem; background:#4aa3c9; color:white; padding:0.1rem 0.5rem; border-radius:10px; font-weight:600; margin-left:0.3rem;">
-                <i class="fas fa-mirror"></i> Mirror
-            </span>
         </button>
         <button class="tab-btn" onclick="switchTab('export')">
             <i class="fas fa-file-excel" style="color:#217346;"></i> Export Excel
@@ -1511,7 +1653,7 @@
             </div>
             <div style="margin-top:1.5rem; padding:1rem; background:#f8fcff; border-radius:16px; border:1px solid #e0ecf5;">
                 <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; font-size:0.9rem; color:#1f4a61;">
-                    <span><i class="fas fa-mirror" style="color:#4aa3c9;"></i> <strong>Mirror Mode</strong> - Kamera seperti bercermin</span>
+                    <span><i class="fas fa-file-excel" style="color:#217346;"></i> <strong>Upload Excel</strong> - Tambah siswa massal</span>
                     <span><i class="fas fa-clock"></i> Data tersimpan di LocalStorage</span>
                 </div>
             </div>
@@ -1519,7 +1661,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: DATA SISWA (DIPERLUKAN TAPI DISINGKAT)
+         TAB: DATA SISWA
          ============================================================ -->
     <div class="tab-content" id="tabStudents">
         <div class="bulk-bar">
@@ -1658,6 +1800,51 @@
     </div>
 
     <!-- ============================================================
+         TAB: UPLOAD EXCEL
+         ============================================================ -->
+    <div class="tab-content" id="tabUpload">
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-file-excel" style="color:#217346;"></i> Upload Excel
+                <span class="local-badge" style="font-size:0.65rem;">
+                    <span class="dot"></span> Massal
+                </span>
+            </div>
+
+            <div class="upload-excel-section">
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <div class="upload-text">Klik atau drag & drop file Excel</div>
+                    <div class="upload-sub">Support format .xlsx, .xls, .csv</div>
+                    <span class="upload-format"><i class="fas fa-info-circle"></i> Format: No | Nama | NISN | Kelas | Username | Password</span>
+                </div>
+                <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleFileUpload(event)">
+
+                <div class="upload-info">
+                    <div class="info-item">
+                        <i class="fas fa-check-circle" style="color:#2e7d32;"></i>
+                        <span>Kolom wajib: Nama, NISN, Kelas, Username, Password</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-download" style="color:#2a7f9e;"></i>
+                        <span><a href="#" onclick="downloadTemplate()" style="color:#2a7f9e; text-decoration:none;">Download Template</a></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-info-circle" style="color:#d9a13b;"></i>
+                        <span>Data duplikat akan dilewati</span>
+                    </div>
+                </div>
+
+                <div class="upload-result" id="uploadResult">
+                    <div class="result-title" id="resultTitle">✅ Upload Berhasil</div>
+                    <div class="result-detail" id="resultDetail">0 siswa berhasil ditambahkan</div>
+                    <div class="result-list" id="resultList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
          TAB: KELAS
          ============================================================ -->
     <div class="tab-content" id="tabClasses">
@@ -1676,7 +1863,7 @@
     </div>
 
     <!-- ============================================================
-         TAB: SCAN BARCODE - DENGAN EFEK MIRROR
+         TAB: SCAN BARCODE
          ============================================================ -->
     <div class="tab-content" id="tabScan">
         <div class="card">
@@ -1710,7 +1897,6 @@
             <div class="scanner-wrapper">
                 <div class="scanner-container">
                     <div id="reader"></div>
-                    <!-- Label Mirror -->
                     <div class="mirror-label">
                         <i class="fas fa-mirror"></i> MIRROR
                     </div>
@@ -2030,6 +2216,293 @@
     }
 
     // ============================================================
+    // UPLOAD EXCEL - TAMBAH SISWA MASSAL
+    // ============================================================
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                if (jsonData.length === 0) {
+                    showUploadResult('error', '⚠️ File kosong!', 'Tidak ada data yang ditemukan.');
+                    return;
+                }
+
+                // Proses upload
+                processUploadData(jsonData);
+            } catch (err) {
+                showUploadResult('error', '❌ Gagal membaca file!', err.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+        
+        // Reset input
+        event.target.value = '';
+    }
+
+    function processUploadData(data) {
+        let berhasil = 0;
+        let gagal = 0;
+        let details = [];
+
+        // Detect column names (case insensitive)
+        const headers = Object.keys(data[0]).map(h => h.toLowerCase().trim());
+
+        // Map columns
+        const colMap = {
+            nama: headers.find(h => h.includes('nama') || h.includes('name')),
+            nisn: headers.find(h => h.includes('nisn') || h.includes('nis')),
+            kelas: headers.find(h => h.includes('kelas') || h.includes('class')),
+            username: headers.find(h => h.includes('username') || h.includes('user')),
+            password: headers.find(h => h.includes('password') || h.includes('pass')),
+            kode: headers.find(h => h.includes('kode') || h.includes('code')),
+            tempatLahir: headers.find(h => h.includes('tempat') && h.includes('lahir')),
+            tanggalLahir: headers.find(h => h.includes('tanggal') && h.includes('lahir')),
+            jenisKelamin: headers.find(h => h.includes('jenis') && h.includes('kelamin')),
+            alamat: headers.find(h => h.includes('alamat')),
+            noTelp: headers.find(h => h.includes('telp') || h.includes('telepon') || h.includes('phone')),
+            email: headers.find(h => h.includes('email'))
+        };
+
+        // Validasi kolom wajib
+        if (!colMap.nama || !colMap.nisn || !colMap.kelas || !colMap.username || !colMap.password) {
+            showUploadResult('error', '⚠️ Format file tidak sesuai!', 
+                'Kolom wajib: Nama, NISN, Kelas, Username, Password. ' +
+                'Kolom yang ditemukan: ' + headers.join(', '));
+            return;
+        }
+
+        data.forEach((row, index) => {
+            const rowNum = index + 2; // +2 karena header di baris 1 dan index dimulai 0
+            
+            const nama = String(row[colMap.nama] || '').trim();
+            const nisn = String(row[colMap.nisn] || '').trim();
+            const kelas = String(row[colMap.kelas] || '').trim();
+            const username = String(row[colMap.username] || '').trim();
+            const password = String(row[colMap.password] || '').trim();
+            const kode = colMap.kode ? String(row[colMap.kode] || '').trim() : '';
+            const tempatLahir = colMap.tempatLahir ? String(row[colMap.tempatLahir] || '').trim() : '';
+            const tanggalLahir = colMap.tanggalLahir ? String(row[colMap.tanggalLahir] || '').trim() : '';
+            const jenisKelamin = colMap.jenisKelamin ? String(row[colMap.jenisKelamin] || '').trim() : '';
+            const alamat = colMap.alamat ? String(row[colMap.alamat] || '').trim() : '';
+            const noTelp = colMap.noTelp ? String(row[colMap.noTelp] || '').trim() : '';
+            const email = colMap.email ? String(row[colMap.email] || '').trim() : '';
+
+            // Validasi wajib
+            if (!nama) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'Nama kosong' });
+                return;
+            }
+            if (!nisn) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'NISN kosong' });
+                return;
+            }
+            if (!kelas) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'Kelas kosong' });
+                return;
+            }
+            if (!username) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'Username kosong' });
+                return;
+            }
+            if (!password || password.length < 6) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'Password minimal 6 karakter' });
+                return;
+            }
+
+            // Cek duplikat
+            const dupKode = students.some(s => s.kodeUnik === kode && kode !== '');
+            const dupNisn = students.some(s => s.nisn === nisn);
+            const dupUser = students.some(s => s.username === username);
+
+            if (dupKode) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'Kode unik duplikat: ' + kode });
+                return;
+            }
+            if (dupNisn) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'NISN duplikat: ' + nisn });
+                return;
+            }
+            if (dupUser) {
+                gagal++;
+                details.push({ row: rowNum, status: 'error', message: 'Username duplikat: ' + username });
+                return;
+            }
+
+            // Tambah kelas ke daftar jika belum ada
+            if (kelas && !classList.includes(kelas)) {
+                classList.push(kelas);
+                classList.sort();
+            }
+
+            // Generate kode otomatis jika tidak diisi
+            let finalKode = kode;
+            if (!finalKode) {
+                const year = new Date().getFullYear();
+                const existingCodes = students.map(s => s.kodeUnik);
+                let maxNum = 0;
+                existingCodes.forEach(code => {
+                    const match = code?.match(/S-\d{4}-(\d{3})/);
+                    if (match) maxNum = Math.max(maxNum, parseInt(match[1]));
+                });
+                const nextNum = String(maxNum + 1).padStart(3, '0');
+                finalKode = `S-${year}-${nextNum}`;
+            }
+
+            // Buat objek siswa
+            const newStudent = {
+                id: nextId++,
+                kodeUnik: finalKode,
+                namaLengkap: nama,
+                nisn: nisn,
+                username: username,
+                password: password,
+                kelas: kelas,
+                tempatLahir: tempatLahir,
+                tanggalLahir: tanggalLahir,
+                jenisKelamin: jenisKelamin,
+                anakKe: '',
+                dusun: '',
+                desa: '',
+                kecamatan: '',
+                kabupaten: '',
+                provinsi: '',
+                rtRw: '',
+                noTelp: noTelp,
+                kodePos: '',
+                namaAyah: '',
+                namaIbu: '',
+                pekerjaanAyah: '',
+                pekerjaanIbu: '',
+                alamatOrtu: alamat,
+                noKK: '',
+                nikSiswa: '',
+                nikAyah: '',
+                nikIbu: '',
+                namaWali: '',
+                alamatWali: '',
+                asalSekolah: '',
+                alamatSekolah: '',
+                nsmNpsn: '',
+                catatan: '',
+                foto: '',
+                email: email
+            };
+
+            students.push(newStudent);
+            berhasil++;
+            details.push({ row: rowNum, status: 'success', message: `${nama} - ${finalKode}` });
+        });
+
+        // Simpan data
+        saveData();
+        renderAll();
+        updateDashboard();
+        updateScanInfo();
+        updateExportDropdowns();
+
+        // Tampilkan hasil
+        const message = `${berhasil} siswa berhasil ditambahkan${gagal > 0 ? `, ${gagal} gagal` : ''}`;
+        showUploadResult(berhasil > 0 ? 'success' : 'error', 
+            berhasil > 0 ? '✅ Upload Berhasil' : '❌ Upload Gagal',
+            message,
+            details
+        );
+    }
+
+    function showUploadResult(type, title, detail, details = []) {
+        const resultDiv = document.getElementById('uploadResult');
+        const titleEl = document.getElementById('resultTitle');
+        const detailEl = document.getElementById('resultDetail');
+        const listEl = document.getElementById('resultList');
+
+        resultDiv.className = 'upload-result show ' + type;
+        titleEl.textContent = title;
+        detailEl.textContent = detail;
+
+        if (details.length > 0) {
+            let listHtml = '';
+            details.forEach(d => {
+                const icon = d.status === 'success' ? '✅' : '❌';
+                const color = d.status === 'success' ? 'success' : 'error';
+                listHtml += `
+                    <div class="list-item">
+                        <span><span class="status-icon ${color}">${icon}</span> Baris ${d.row}: ${d.message}</span>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = listHtml;
+            listEl.style.display = 'block';
+        } else {
+            listEl.style.display = 'none';
+        }
+
+        // Scroll ke hasil
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function downloadTemplate() {
+        const templateData = [
+            ['No', 'Nama', 'NISN', 'Kelas', 'Username', 'Password', 'Kode Unik', 'Tempat Lahir', 'Tanggal Lahir', 'Jenis Kelamin', 'Alamat', 'No Telepon', 'Email'],
+            ['1', 'Contoh Siswa', '1234567890', 'VII A', 'contoh.siswa', 'contoh123', 'S-2024-001', 'Jakarta', '2010-01-01', 'Laki-laki', 'Jl. Contoh No. 1', '081234567890', 'contoh@email.com']
+        ];
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(templateData);
+        ws['!cols'] = [{ wch: 5 }, { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 18 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 25 }];
+        XLSX.utils.book_append_sheet(wb, ws, 'Template');
+        
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Template_Upload_Siswa.xlsx';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('📥 Template berhasil didownload!', 'success');
+    }
+
+    // Drag and drop support
+    document.addEventListener('DOMContentLoaded', function() {
+        const zone = document.getElementById('uploadZone');
+        if (zone) {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            zone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const input = document.getElementById('fileInput');
+                    input.files = files;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+    });
+
+    // ============================================================
     // EXPORT EXCEL FUNCTIONS
     // ============================================================
     function getExportData(kelas, periode) {
@@ -2326,11 +2799,11 @@
 
         console.log('📱 Admin & Scanner siap digunakan!');
         console.log('📚 Total siswa: ' + students.length);
-        console.log('🪞 Kamera dalam mode Mirror (seperti kaca)');
+        console.log('📤 Upload Excel untuk tambah siswa massal siap!');
     }
 
     // ============================================================
-    // RENDER FUNCTIONS (DIPERLUKAN TAPI DISINGKAT)
+    // RENDER FUNCTIONS
     // ============================================================
     function renderAll() {
         renderTable();
@@ -2531,7 +3004,7 @@
     }
 
     // ============================================================
-    // STUDENT CRUD (DIPERLUKAN TAPI DISINGKAT)
+    // STUDENT CRUD
     // ============================================================
     function getFormData() {
         return {
@@ -2879,7 +3352,7 @@
     }
 
     // ============================================================
-    // SCANNER - DENGAN EFEK MIRROR
+    // SCANNER
     // ============================================================
     function startScanner() {
         if (isScanning) {
@@ -2915,8 +3388,6 @@
                 onScanSuccess,
                 onScanError
             );
-
-            // Efek mirror sudah diterapkan via CSS di #reader video
 
         } catch (err) {
             console.error('Scanner error:', err);
@@ -3221,11 +3692,19 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-        const btnMap = { dashboard: 0, students: 1, add: 2, classes: 3, scan: 4, export: 5 };
+        const btnMap = { dashboard: 0, students: 1, add: 2, upload: 3, classes: 4, scan: 5, export: 6 };
         const idx = btnMap[tab] || 0;
         document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
 
-        const contentMap = { dashboard: 'tabDashboard', students: 'tabStudents', add: 'tabAdd', classes: 'tabClasses', scan: 'tabScan', export: 'tabExport' };
+        const contentMap = { 
+            dashboard: 'tabDashboard', 
+            students: 'tabStudents', 
+            add: 'tabAdd', 
+            upload: 'tabUpload',
+            classes: 'tabClasses', 
+            scan: 'tabScan', 
+            export: 'tabExport' 
+        };
         document.getElementById(contentMap[tab])?.classList.add('active');
 
         if (tab === 'scan') {
@@ -3326,6 +3805,8 @@
     window.previewExport = previewExport;
     window.exportAllClasses = exportAllClasses;
     window.updateExportDropdowns = updateExportDropdowns;
+    window.handleFileUpload = handleFileUpload;
+    window.downloadTemplate = downloadTemplate;
 
     initApp();
 </script>
